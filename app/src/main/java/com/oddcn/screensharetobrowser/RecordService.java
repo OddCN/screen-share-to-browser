@@ -154,7 +154,6 @@ public class RecordService extends Service {
         imageReader.setOnImageAvailableListener(new ImageReader.OnImageAvailableListener() {
             @Override
             public void onImageAvailable(ImageReader imageReader) {
-                Log.i(TAG, "call onImageAvailable");
                 try {
                     img = imageReader.acquireLatestImage();
                     if (img != null) {
@@ -173,7 +172,7 @@ public class RecordService extends Service {
                         bitmap.copyPixelsFromBuffer(buffer);
                         bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        int options_ = 30;//压缩分辨率,比如取值为30，那么压缩了30%
+                        int options_ = 70;//压缩分辨率,比如取值为30，那么压缩了30%
                         bitmap.compress(Bitmap.CompressFormat.JPEG, options_, byteArrayOutputStream);
 
                         MyWebSocketStreamWork myWebSocketStreamWork =

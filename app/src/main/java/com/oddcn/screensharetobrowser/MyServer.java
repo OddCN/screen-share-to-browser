@@ -73,7 +73,6 @@ public class MyServer extends WebSocketServer {
     @Override
     public void onMessage(WebSocket conn, String message) {
         Log.d(TAG, "onMessage: " + message);
-        conn.send("java-WebSocket is  coooool");
     }
 
     @Override
