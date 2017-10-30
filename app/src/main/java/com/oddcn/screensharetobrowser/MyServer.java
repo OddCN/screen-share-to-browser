@@ -67,7 +67,9 @@ public class MyServer extends WebSocketServer {
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        Log.d(TAG, "onClose: ");
+        counter--;
+        Log.d(TAG, "onClose: " + conn.getRemoteSocketAddress().getAddress());
+        Log.d(TAG, "onClose: ///////////Opened connection number  " + counter);
     }
 
     @Override
