@@ -15,7 +15,7 @@ import android.widget.TextView;
 
 import java.util.Random;
 
-public class MainActivity extends AppCompatActivity {
+public class OldMainActivity extends AppCompatActivity {
     private static final int RECORD_REQUEST_CODE = 101;
 
     private int port = 8123;
@@ -33,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         projectionManager = (MediaProjectionManager) getSystemService(MEDIA_PROJECTION_SERVICE);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_old_main);
 
         tvIp = (TextView) findViewById(R.id.tv_ip);
         refreshWifiIp();

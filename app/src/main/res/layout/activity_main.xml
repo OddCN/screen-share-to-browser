@@ -1,66 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.oddcn.screensharetobrowser.MainActivity">
+    tools:context="com.oddcn.screensharetobrowser.main.view.MainActivity">
 
-    <TextView
-        android:id="@+id/tv_ip"
-        style="@style/TextAppearance.AppCompat.Large"
-        android:layout_width="wrap_content"
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Hello World!"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        android:background="#FFF">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="16dp"
+            android:paddingTop="32dp"
+            app:layout_scrollFlags="scroll|enterAlways|enterAlwaysCollapsed"
+            app:popupTheme="@style/AppTheme.PopupOverlay"
+            app:title="@string/app_name"
+            app:titleTextAppearance="@style/ToolbarTitle" />
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="changePort"
-        android:text="随机更换端口"
-        app:layout_constraintBottom_toTopOf="@id/tv_ip"
-        app:layout_constraintEnd_toEndOf="parent" />
+    </android.support.design.widget.AppBarLayout>
 
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="refreshIp"
-        android:text="刷新"
-        app:layout_constraintBottom_toBottomOf="@id/tv_ip"
-        app:layout_constraintStart_toEndOf="@id/tv_ip"
-        app:layout_constraintTop_toTopOf="@id/tv_ip" />
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="startServer"
-        android:text="启动server"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_ip" />
-
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="sendMsg"
-        android:text="发送"
-        app:layout_constraintStart_toStartOf="@id/tv_ip"
-        app:layout_constraintTop_toBottomOf="@id/tv_ip" />
-
-    <Button
-        android:id="@+id/start_record"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="recordButtonClick"
-        android:text="@string/start_record"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/tv_ip" />
-
-</android.support.constraint.ConstraintLayout>
+    <FrameLayout
+        android:id="@+id/main_fragment_container"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior" />
+</android.support.design.widget.CoordinatorLayout>

@@ -1,22 +1,121 @@
-<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     tools:context="com.oddcn.screensharetobrowser.main.view.MainFragment">
 
-  <android.support.constraint.ConstraintLayout
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content">
+    <data>
 
-      <TextView
-          android:layout_width="wrap_content"
-          style="@style/TextAppearance.AppCompat.Large"
-          android:text="@string/local_ip"
-          app:layout_constraintTop_toTopOf="parent"
-          app:layout_constraintStart_toStartOf="parent"
-          android:layout_height="wrap_content" />
+        <variable
+            name="vm"
+            type="com.oddcn.screensharetobrowser.main.viewModel.MainViewModel" />
 
-  </android.support.constraint.ConstraintLayout>
+    </data>
 
-</android.support.v4.widget.NestedScrollView>
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#F5F5F5"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFF"
+                android:orientation="vertical"
+                android:paddingTop="16dp">
+
+                <android.support.design.widget.TabLayout
+                    android:id="@+id/tab_mode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_horizontal" />
+
+                <android.support.v4.view.ViewPager
+                    android:id="@+id/view_pager_mode_desc"
+                    android:layout_width="match_parent"
+                    android:layout_height="32dp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="#FFF"
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/img_refresh_ip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:foreground="?attr/selectableItemBackgroundBorderless"
+                    android:onClick="@{vm.onImgRefreshIpClick()}"
+                    android:paddingBottom="8dp"
+                    android:paddingEnd="8dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="8dp"
+                    android:src="@drawable/ic_refresh" />
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Medium"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/local_ip" />
+
+                <TextView
+                    android:id="@+id/tv_local_ip"
+                    style="@style/TextAppearance.AppCompat.Large"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:text="@{vm.localIpText}"
+                    android:textColor="@color/colorAccent" />
+
+                <TextView
+                    style="@style/TextAppearance.AppCompat.Large"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=":" />
+
+                <TextView
+                    android:id="@+id/tv_local_port"
+                    style="@style/TextAppearance.AppCompat.Large"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:padding="8dp"
+                    android:text="@={`` + vm.port}"
+                    android:textColor="@color/colorAccent" />
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFF">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentEnd="true"
+                    android:background="#FAFAFA"
+                    android:foreground="?attr/selectableItemBackground"
+                    android:onClick="@{vm.onTextViewRandomChangeIpClick()}"
+                    android:paddingBottom="8dp"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="8dp"
+                    android:text="随机更换端口" />
+            </RelativeLayout>
+
+        </LinearLayout>
+
+
+    </android.support.v4.widget.NestedScrollView>
+
+</layout>
