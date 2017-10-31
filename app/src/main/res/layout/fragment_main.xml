@@ -38,7 +38,9 @@
                 <android.support.v4.view.ViewPager
                     android:id="@+id/view_pager_mode_desc"
                     android:layout_width="match_parent"
-                    android:layout_height="32dp" />
+                    android:layout_height="64dp"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp" />
 
             </LinearLayout>
 
@@ -112,6 +114,33 @@
                     android:paddingTop="8dp"
                     android:text="随机更换端口" />
             </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="#FFF"
+                android:orientation="horizontal">
+
+                <Button
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableStart="@{vm.isServerRunning == false ? @drawable/ic_start_server : @drawable/ic_stop}"
+                    android:text="@{vm.isServerRunning == false ? @string/start_server : @string/stop_server}"
+                    android:textSize="16sp" />
+
+                <Button
+                    style="?android:attr/buttonBarButtonStyle"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:drawableStart="@{vm.isRecorderRunning == false ? @drawable/ic_start_record : @drawable/ic_stop}"
+                    android:enabled="@{vm.isServerRunning}"
+                    android:text="@{vm.isRecorderRunning == false ? @string/start_record : @string/stop_record}"
+                    android:textSize="16sp" />
+            </LinearLayout>
 
         </LinearLayout>
 

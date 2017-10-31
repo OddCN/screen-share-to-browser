@@ -1,6 +1,7 @@
 package com.oddcn.screensharetobrowser.main.viewModel;
 
 import android.content.Context;
+import android.databinding.ObservableBoolean;
 import android.databinding.ObservableField;
 import android.databinding.ObservableInt;
 import android.view.View;
@@ -23,9 +24,14 @@ public class MainViewModel {
     private static final int PORT_MIN = 1024;
     private static final int PORT_MAX = 49151;
 
+    public ObservableBoolean isServerRunning = new ObservableBoolean();
+    public ObservableBoolean isRecorderRunning = new ObservableBoolean();
+
     public MainViewModel(Context context) {
         this.context = context;
         port.set(8123);
+        isServerRunning.set(false);
+        isRecorderRunning.set(false);
     }
 
     public void refreshIp() {

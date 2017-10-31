@@ -8,6 +8,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
@@ -44,7 +45,7 @@ public class MainFragment extends Fragment {
         binding.viewPagerModeDesc.setAdapter(new ModeDescAdapter());
         binding.tabMode.setupWithViewPager(binding.viewPagerModeDesc);
         binding.tabMode.getTabAt(0).setIcon(R.drawable.ic_wifi).setText("WiFi模式");
-        binding.tabMode.getTabAt(1).setIcon(R.drawable.ic_hotspot).setText("手机热点模式");
+        binding.tabMode.getTabAt(1).setIcon(R.drawable.ic_hotspot).setText("热点模式");
 
         vm = new MainViewModel(getContext());
         binding.setVm(vm);
@@ -53,6 +54,12 @@ public class MainFragment extends Fragment {
     }
 
     private void initEvent() {
+        binding.viewPagerModeDesc.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                return true;
+            }
+        });
     }
 
     private class ModeDescAdapter extends PagerAdapter {
@@ -71,11 +78,11 @@ public class MainFragment extends Fragment {
             TextView textView = new TextView(container.getContext());
             ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
             textView.setLayoutParams(layoutParams);
-            textView.setGravity(Gravity.CENTER);
+            textView.setGravity(Gravity.CENTER_VERTICAL);
             if (position == 0) {
-                textView.setText("0");
+                textView.setText(getText(R.string.wifi_mode_desc));
             } else if (position == 1) {
-                textView.setText("1");
+                textView.setText(getText(R.string.hotspot_mode_desc));
             }
             container.addView(textView);
             return textView;
