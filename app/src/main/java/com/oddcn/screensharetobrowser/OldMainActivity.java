@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.oddcn.screensharetobrowser.recorder.RecordService;
-import com.oddcn.screensharetobrowser.server.MyServer;
+import com.oddcn.screensharetobrowser.server.wsServer.WsServer;
 import com.oddcn.screensharetobrowser.utils.NetUtil;
 
 import java.util.Random;
@@ -59,12 +59,12 @@ public class OldMainActivity extends AppCompatActivity {
     }
 
     public void startServer(View view) {
-        MyServer.init("0.0.0.0", port);
-        MyServer.get().runAsync();
+        WsServer.init("0.0.0.0", port);
+        WsServer.get().runAsync();
     }
 
     public void sendMsg(View view) {
-        MyServer.get().broadcast("this is a broadcast");
+        WsServer.get().broadcast("this is a broadcast");
     }
 
     public void recordButtonClick(View view) {
@@ -115,7 +115,7 @@ public class OldMainActivity extends AppCompatActivity {
 
     @Override
     protected void onDestroy() {
-        MyServer.get().stopWithException();
+        WsServer.get().stopWithException();
         unbindService(connection);
         super.onDestroy();
     }

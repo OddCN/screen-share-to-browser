@@ -1,9 +1,10 @@
-package com.oddcn.screensharetobrowser.server;
+package com.oddcn.screensharetobrowser.server.wsServer;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import com.oddcn.screensharetobrowser.RxBus;
-import com.oddcn.screensharetobrowser.main.model.entity.ServerStatusChangedEvent;
+import com.oddcn.screensharetobrowser.main.model.entity.WsServerStatusChangedEvent;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -12,70 +13,73 @@ import org.java_websocket.server.WebSocketServer;
 import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by oddzh on 2017/10/27.
  */
 
-public class MyServer extends WebSocketServer {
+public class WsServer extends WebSocketServer {
 
-    private static final String TAG = "MyServer";
+    private static final String TAG = "WsServer";
 
-    private static int counter = 0;
+    private int counter = 0;
 
-    private static MyServer myServer;
+    private static WsServer wsServer;
 
     public static void init(String host, int port) {
-        myServer = new MyServer(new InetSocketAddress(host, port));
+        wsServer = new WsServer(new InetSocketAddress(host, port));
     }
 
-    private MyServer(InetSocketAddress address) {
+    private WsServer(InetSocketAddress address) {
         super(address);
     }
 
-    public static MyServer get() {
-        if (myServer == null) {
-            myServer = new MyServer(new InetSocketAddress("0.0.0.0", 8123));
+    public static WsServer get() {
+        if (wsServer == null) {
+            wsServer = new WsServer(new InetSocketAddress("0.0.0.0", 8123));
             Log.d(TAG, "No port specified. Defaulting to 8123");
         }
-        return myServer;
+        return wsServer;
     }
 
     public void runAsync() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                myServer.run();
+                wsServer.run();
             }
         }).start();
     }
 
     public void stopWithException() {
         try {
-            myServer.stop();
+            wsServer.stop();
             isRunning = false;
-            RxBus.getDefault().post(new ServerStatusChangedEvent(isRunning,"关闭服务"));
+            postEvent("已关闭服务");
         } catch (IOException e) {
             e.printStackTrace();
-            RxBus.getDefault().post(new ServerStatusChangedEvent(isRunning,"关闭服务失败"));
+            postEvent("关闭服务失败");
         } catch (InterruptedException e) {
             e.printStackTrace();
-            RxBus.getDefault().post(new ServerStatusChangedEvent(isRunning,"关闭服务失败"));
+            postEvent("关闭服务失败");
         }
     }
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
         counter++;
-        Log.d(TAG, "onOpen: " + conn.getRemoteSocketAddress().getAddress());
+        String connIp = conn.getRemoteSocketAddress().getAddress().toString().replace("/", "");
+        connList.add(connIp);
+        postEvent("");
+        Log.d(TAG, "onOpen: " + connIp);
         Log.d(TAG, "onOpen: ///////////Opened connection number  " + counter);
     }
 
     @Override
     public void onClose(WebSocket conn, int code, String reason, boolean remote) {
-        counter--;
-        Log.d(TAG, "onClose: " + conn.getRemoteSocketAddress().getAddress());
-        Log.d(TAG, "onClose: ///////////Opened connection number  " + counter);
+        Log.d(TAG, "onClose: ");
     }
 
     @Override
@@ -94,24 +98,42 @@ public class MyServer extends WebSocketServer {
         return isRunning;
     }
 
+    private List<String> connList = new ArrayList<>();
+
     @Override
     public void onError(WebSocket conn, Exception ex) {
         Log.d(TAG, "onError: " + ex.getMessage());
         ex.printStackTrace();
-        isRunning = false;
-        ServerStatusChangedEvent event = new ServerStatusChangedEvent(isRunning, "服务启动失败");
         if (ex.getMessage().contains("Address already in use")) {
             Log.e(TAG, "onError: 端口已被占用");
-            event.msg = "服务启动失败，端口已被占用，请更换端口";
+            postEvent("服务启动失败，端口已被占用，请更换端口");
         }
-        RxBus.getDefault().post(event);
+    }
+
+    @Override
+    public void onClosing(WebSocket conn, int code, String reason, boolean remote) {
+        super.onClosing(conn, code, reason, remote);
+        counter--;
+        String connIp = conn.getRemoteSocketAddress().getAddress().toString().replace("/", "");
+        for (String ip : connList) {
+            if (ip.equals(connIp)) {
+                connList.remove(ip);
+            }
+        }
+        postEvent("");
+        Log.d(TAG, "onClosing: " + connIp);
+        Log.d(TAG, "onClosing: ///////////Opened connection number  " + counter);
     }
 
     @Override
     public void onStart() {
         Log.d(TAG, "onStart: ");
         isRunning = true;
-        RxBus.getDefault().post(new ServerStatusChangedEvent(isRunning,"服务启动成功"));
+        postEvent("服务启动成功");
+    }
+
+    private void postEvent(String msg) {
+        RxBus.getDefault().post(new WsServerStatusChangedEvent(isRunning, msg, connList));
     }
 
 }

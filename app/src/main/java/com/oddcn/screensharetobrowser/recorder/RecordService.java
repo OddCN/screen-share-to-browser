@@ -22,7 +22,9 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.oddcn.screensharetobrowser.server.MyWebSocketStreamWork;
+import com.oddcn.screensharetobrowser.RxBus;
+import com.oddcn.screensharetobrowser.main.model.entity.RecorderStatusChangedEvent;
+import com.oddcn.screensharetobrowser.server.wsServer.MyWebSocketStreamWork;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -122,6 +124,7 @@ public class RecordService extends Service {
         }
         createVirtualDisplayForImageReader();
         running = true;
+        RxBus.getDefault().post(new RecorderStatusChangedEvent(running));
         return true;
     }
 
@@ -145,6 +148,7 @@ public class RecordService extends Service {
 
         if (imageReader != null)
             imageReader.close();
+        RxBus.getDefault().post(new RecorderStatusChangedEvent(running));
         return true;
     }
 

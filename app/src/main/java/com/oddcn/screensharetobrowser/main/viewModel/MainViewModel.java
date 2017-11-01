@@ -25,12 +25,16 @@ public class MainViewModel {
     private static final int PORT_MAX = 49151;
 
     public ObservableBoolean isServerRunning = new ObservableBoolean();
+
+    public ObservableInt serverConnCount = new ObservableInt();
+
     public ObservableBoolean isRecorderRunning = new ObservableBoolean();
 
     public MainViewModel(Context context) {
         this.context = context;
         port.set(8123);
         isServerRunning.set(false);
+        serverConnCount.set(0);
         isRecorderRunning.set(false);
     }
 

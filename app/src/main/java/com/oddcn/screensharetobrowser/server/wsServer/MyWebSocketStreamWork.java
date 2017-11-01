@@ -1,8 +1,6 @@
-package com.oddcn.screensharetobrowser.server;
+package com.oddcn.screensharetobrowser.server.wsServer;
 
 import android.util.Log;
-
-import com.oddcn.screensharetobrowser.server.MyServer;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -29,11 +27,11 @@ public class MyWebSocketStreamWork implements Runnable {
 //            ByteArrayInputStream byteArrayInputStream =
 //                    new ByteArrayInputStream(byteArrayOutputStream.toByteArray());
 //            while (byteArrayInputStream.read(byteBuffer) != -1) {
-//                MyServer.get().broadcast(byteBuffer);
+//                WsServer.get().broadcast(byteBuffer);
 //            }
             byte[] b = byteArrayOutputStream.toByteArray();
             String base64Str = org.java_websocket.util.Base64.encodeBytes(b);
-            MyServer.get().broadcast(base64Str);
+            WsServer.get().broadcast(base64Str);
 
             byteArrayOutputStream.flush();
             byteArrayOutputStream.close();

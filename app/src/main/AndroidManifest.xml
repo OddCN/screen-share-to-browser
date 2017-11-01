@@ -27,6 +27,8 @@
 
         <service android:name=".recorder.RecordService" />
 
+        <service android:name=".server.ServerService" />
+
     </application>
 
 </manifest>

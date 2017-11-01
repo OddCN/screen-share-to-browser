@@ -9,6 +9,10 @@
             name="vm"
             type="com.oddcn.screensharetobrowser.main.viewModel.MainViewModel" />
 
+        <import type="com.oddcn.screensharetobrowser.utils.NetUtil" />
+
+        <import type="android.view.View" />
+
     </data>
 
     <android.support.v4.widget.NestedScrollView
@@ -144,9 +148,43 @@
                     android:textSize="16sp" />
             </LinearLayout>
 
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:background="#FFF"
+                android:paddingBottom="8dp"
+                android:paddingStart="16dp"
+                android:paddingTop="8dp"
+                android:text="@{vm.isServerRunning ? `服务已在`+ vm.localIpText+`:`+vm.port+`启动`:`服务未启动`}"
+                android:textSize="12sp" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="1dp"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#FFF"
+                    android:paddingBottom="8dp"
+                    android:paddingStart="16dp"
+                    android:paddingTop="8dp"
+                    android:text="@{`当前连接数:` + vm.serverConnCount}"
+                    android:visibility="@{vm.isServerRunning ? View.VISIBLE : View.INVISIBLE}" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/recycler_view_conn"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="#FFF"
+                    android:nestedScrollingEnabled="false" />
+            </LinearLayout>
+
+
         </LinearLayout>
-
-
     </android.support.v4.widget.NestedScrollView>
 
 </layout>
