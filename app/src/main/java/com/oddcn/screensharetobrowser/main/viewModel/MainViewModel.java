@@ -7,7 +7,7 @@ import android.databinding.ObservableInt;
 import android.view.View;
 import android.widget.Toast;
 
-import com.oddcn.screensharetobrowser.Utils;
+import com.oddcn.screensharetobrowser.utils.NetUtil;
 
 import java.util.Random;
 
@@ -35,7 +35,7 @@ public class MainViewModel {
     }
 
     public void refreshIp() {
-        localIpText.set(Utils.getWifiIp(context));
+        localIpText.set(NetUtil.getWifiIp(context));
     }
 
     public View.OnClickListener onImgRefreshIpClick() {
@@ -52,6 +52,9 @@ public class MainViewModel {
         return new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                if (isServerRunning.get()) {
+                    Toast.makeText(context, "服务运行中，不可更改", Toast.LENGTH_SHORT).show();
+                }
                 int randomPort = new Random().nextInt(PORT_MAX - PORT_MIN) + PORT_MIN;
                 port.set(randomPort);
                 refreshIp();

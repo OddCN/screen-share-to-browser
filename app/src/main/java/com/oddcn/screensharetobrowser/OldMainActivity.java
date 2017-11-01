@@ -13,6 +13,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.oddcn.screensharetobrowser.recorder.RecordService;
+import com.oddcn.screensharetobrowser.server.MyServer;
+import com.oddcn.screensharetobrowser.utils.NetUtil;
+
 import java.util.Random;
 
 public class OldMainActivity extends AppCompatActivity {
@@ -106,7 +110,7 @@ public class OldMainActivity extends AppCompatActivity {
     };
 
     private void refreshWifiIp() {
-        tvIp.setText(Utils.getWifiIp(getApplicationContext()) + ":" + port);
+        tvIp.setText(NetUtil.getWifiIp(getApplicationContext()) + ":" + port);
     }
 
     @Override

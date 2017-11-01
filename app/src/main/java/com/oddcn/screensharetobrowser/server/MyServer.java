@@ -1,6 +1,9 @@
-package com.oddcn.screensharetobrowser;
+package com.oddcn.screensharetobrowser.server;
 
 import android.util.Log;
+
+import com.oddcn.screensharetobrowser.RxBus;
+import com.oddcn.screensharetobrowser.main.model.entity.ServerStatusChangedEvent;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -21,7 +24,6 @@ public class MyServer extends WebSocketServer {
     private static int counter = 0;
 
     private static MyServer myServer;
-
 
     public static void init(String host, int port) {
         myServer = new MyServer(new InetSocketAddress(host, port));
@@ -51,10 +53,14 @@ public class MyServer extends WebSocketServer {
     public void stopWithException() {
         try {
             myServer.stop();
+            isRunning = false;
+            RxBus.getDefault().post(new ServerStatusChangedEvent(isRunning,"关闭服务"));
         } catch (IOException e) {
             e.printStackTrace();
+            RxBus.getDefault().post(new ServerStatusChangedEvent(isRunning,"关闭服务失败"));
         } catch (InterruptedException e) {
             e.printStackTrace();
+            RxBus.getDefault().post(new ServerStatusChangedEvent(isRunning,"关闭服务失败"));
         }
     }
 
@@ -82,18 +88,30 @@ public class MyServer extends WebSocketServer {
         Log.d(TAG, "onMessage: buffer");
     }
 
+    private boolean isRunning = false;
+
+    public boolean isRunning() {
+        return isRunning;
+    }
+
     @Override
     public void onError(WebSocket conn, Exception ex) {
         Log.d(TAG, "onError: " + ex.getMessage());
         ex.printStackTrace();
+        isRunning = false;
+        ServerStatusChangedEvent event = new ServerStatusChangedEvent(isRunning, "服务启动失败");
         if (ex.getMessage().contains("Address already in use")) {
             Log.e(TAG, "onError: 端口已被占用");
+            event.msg = "服务启动失败，端口已被占用，请更换端口";
         }
+        RxBus.getDefault().post(event);
     }
 
     @Override
     public void onStart() {
         Log.d(TAG, "onStart: ");
+        isRunning = true;
+        RxBus.getDefault().post(new ServerStatusChangedEvent(isRunning,"服务启动成功"));
     }
 
 }

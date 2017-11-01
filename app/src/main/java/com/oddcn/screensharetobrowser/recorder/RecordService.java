@@ -1,4 +1,4 @@
-package com.oddcn.screensharetobrowser;
+package com.oddcn.screensharetobrowser.recorder;
 
 import android.app.Service;
 import android.content.Context;
@@ -21,6 +21,8 @@ import android.os.Message;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
+
+import com.oddcn.screensharetobrowser.server.MyWebSocketStreamWork;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;

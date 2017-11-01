@@ -1,11 +1,17 @@
 <resources>
     <string name="app_name">屏幕分享</string>
+
     <string name="wifi_mode_desc">本机与其他设备（电脑、手机等）处在同一WiFi网络下，使用其他设备的浏览器访问本机的服务地址</string>
     <string name="hotspot_mode_desc">本机建立WiFi热点，其他设备（电脑、手机等）连接本机发射的无线网络后，打开浏览器访问本机的服务地址</string>
+
+    <string name="local_ip">本机</string>
+
     <string name="start_server">开启服务</string>
     <string name="stop_server">停止服务</string>
     <string name="start_record">开始录屏</string>
     <string name="stop_record">停止录屏</string>
-    <string name="local_ip">本机</string>
+
+
+    <string name="permission_request_denied">需要相应的权限</string>
 
 </resources>

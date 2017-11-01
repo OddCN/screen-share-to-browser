@@ -1,9 +1,9 @@
-package com.oddcn.screensharetobrowser;
+package com.oddcn.screensharetobrowser.server;
 
-import android.util.Base64;
 import android.util.Log;
 
-import java.io.ByteArrayInputStream;
+import com.oddcn.screensharetobrowser.server.MyServer;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 

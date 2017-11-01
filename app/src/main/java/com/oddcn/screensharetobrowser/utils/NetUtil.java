@@ -1,4 +1,4 @@
-package com.oddcn.screensharetobrowser;
+package com.oddcn.screensharetobrowser.utils;
 
 import android.content.Context;
 import android.net.wifi.WifiManager;
@@ -14,7 +14,7 @@ import java.util.Locale;
  * Created by oddzh on 2017/10/27.
  */
 
-public class Utils {
+public class NetUtil {
 
     public static String getIp() {
         try {
