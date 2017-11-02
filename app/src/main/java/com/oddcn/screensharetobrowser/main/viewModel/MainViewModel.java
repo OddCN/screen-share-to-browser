@@ -20,7 +20,7 @@ public class MainViewModel {
     private Context context;
 
     public ObservableField<String> localIpText = new ObservableField<>();
-    public ObservableInt port = new ObservableInt();
+    public static ObservableInt port = new ObservableInt();
     private static final int PORT_MIN = 1024;
     private static final int PORT_MAX = 49151;
 

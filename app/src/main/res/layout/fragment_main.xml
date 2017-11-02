@@ -156,13 +156,11 @@
                 android:paddingBottom="8dp"
                 android:paddingStart="16dp"
                 android:paddingTop="8dp"
-                android:text="@{vm.isServerRunning ? `服务已在`+ vm.localIpText+`:`+vm.port+`启动`:`服务未启动`}"
-                android:textSize="12sp" />
+                android:text="@{vm.isServerRunning ? `服务已在`+ vm.localIpText+`:`+vm.port+`启动`:`服务未启动`}" />
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="1dp"
                 android:orientation="horizontal">
 
                 <TextView
@@ -172,7 +170,15 @@
                     android:paddingBottom="8dp"
                     android:paddingStart="16dp"
                     android:paddingTop="8dp"
-                    android:text="@{`当前连接数:` + vm.serverConnCount}"
+                    android:text="当前连接 "
+                    android:visibility="@{vm.isServerRunning ? View.VISIBLE : View.INVISIBLE}" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="#FFF"
+                    android:padding="8dp"
+                    android:text="@{`` + vm.serverConnCount + `个`}"
                     android:visibility="@{vm.isServerRunning ? View.VISIBLE : View.INVISIBLE}" />
 
                 <android.support.v7.widget.RecyclerView

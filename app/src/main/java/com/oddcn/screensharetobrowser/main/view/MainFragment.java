@@ -92,10 +92,13 @@ public class MainFragment extends Fragment {
                         vm.serverConnCount.set(wsServerStatusChangedEvent.connList.size());
                         connAdapter.setData(wsServerStatusChangedEvent.connList);
                         connAdapter.notifyDataSetChanged();
-                        if (wsServerStatusChangedEvent.msg.isEmpty()) {
-                            return;
+                        if (!wsServerStatusChangedEvent.msg.isEmpty()) {
+                            Toast.makeText(getContext(), wsServerStatusChangedEvent.msg, Toast.LENGTH_SHORT).show();
                         }
-                        Toast.makeText(getContext(), wsServerStatusChangedEvent.msg, Toast.LENGTH_SHORT).show();
+                        if (wsServerStatusChangedEvent.msg.equals("服务启动成功")) {
+                            serverService.makeForeground();
+                        }
+
                     }
                 })
                 .subscribe();
@@ -125,7 +128,7 @@ public class MainFragment extends Fragment {
                     serverService.stopServer();
                     recordService.stopRecord();
                 } else {
-                    serverService.startServer("0.0.0.0", vm.port.get());
+                    serverService.startServer();
                 }
             }
         });

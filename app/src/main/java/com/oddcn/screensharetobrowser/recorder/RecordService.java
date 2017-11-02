@@ -178,7 +178,7 @@ public class RecordService extends Service {
                         bitmap.copyPixelsFromBuffer(buffer);
                         bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        int options_ = 70;//压缩分辨率,比如取值为30，那么压缩了30%
+                        int options_ = 0;
                         bitmap.compress(Bitmap.CompressFormat.JPEG, options_, byteArrayOutputStream);
 
                         MyWebSocketStreamWork myWebSocketStreamWork =
