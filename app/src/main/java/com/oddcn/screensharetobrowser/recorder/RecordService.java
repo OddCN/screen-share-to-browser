@@ -90,7 +90,8 @@ public class RecordService extends Service {
 
         //get the size of the window
         mWindowManager = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
-        width = mWindowManager.getDefaultDisplay().getWidth() + 40;
+//        width = mWindowManager.getDefaultDisplay().getWidth() + 40;
+        width = mWindowManager.getDefaultDisplay().getWidth();
         height = mWindowManager.getDefaultDisplay().getHeight();
         //height = 2300;
         Log.i(TAG, "onCreate: w is " + width + " h is " + height);
@@ -122,6 +123,8 @@ public class RecordService extends Service {
         if (mediaProjection == null || running) {
             return false;
         }
+        executorService = Executors.newCachedThreadPool();
+        imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2);
         createVirtualDisplayForImageReader();
         running = true;
         RxBus.getDefault().post(new RecorderStatusChangedEvent(running));
@@ -162,11 +165,14 @@ public class RecordService extends Service {
             public void onImageAvailable(ImageReader imageReader) {
                 try {
                     img = imageReader.acquireLatestImage();
+                    Log.d(TAG, "onImageAvailable: ");
                     if (img != null) {
                         Image.Plane[] planes = img.getPlanes();
+                        Log.d(TAG, "onImageAvailable: !=null");
                         if (planes[0].getBuffer() == null) {
                             return;
                         }
+                        Log.d(TAG, "onImageAvailable: buffer != null");
                         int width = img.getWidth();
                         int height = img.getHeight();
                         final ByteBuffer buffer = planes[0].getBuffer();
@@ -178,7 +184,7 @@ public class RecordService extends Service {
                         bitmap.copyPixelsFromBuffer(buffer);
                         bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        int options_ = 0;
+                        int options_ = 10;
                         bitmap.compress(Bitmap.CompressFormat.JPEG, options_, byteArrayOutputStream);
 
                         MyWebSocketStreamWork myWebSocketStreamWork =
