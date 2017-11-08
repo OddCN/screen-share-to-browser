@@ -24,23 +24,29 @@ public class WsServer extends WebSocketServer {
 
     private static final String TAG = "WsServer";
 
+    public static final int ERROR_TYPE_NORMAL = 0;
+    public static final int ERROR_TYPE_PORT_IN_USE = 1;
+    public static final int ERROR_TYPE_SERVER_CLOSE_FAIL = 2;
+
+    private WsServerListener wsServerListener;
+
+    public void setListener(WsServerListener listener) {
+        wsServerListener = listener;
+    }
+
     private int counter = 0;
 
     private static WsServer wsServer;
+
+    public WsServer(InetSocketAddress address) {
+        super(address);
+    }
 
     public static void init(String host, int port) {
         wsServer = new WsServer(new InetSocketAddress(host, port));
     }
 
-    private WsServer(InetSocketAddress address) {
-        super(address);
-    }
-
     public static WsServer get() {
-        if (wsServer == null) {
-            wsServer = new WsServer(new InetSocketAddress("0.0.0.0", 8123));
-            Log.d(TAG, "No port specified. Defaulting to 8123");
-        }
         return wsServer;
     }
 
@@ -57,13 +63,13 @@ public class WsServer extends WebSocketServer {
         try {
             wsServer.stop();
             isRunning = false;
-            postEvent("已关闭服务");
+            wsServerListener.onWsServerStatusChanged(isRunning);
         } catch (IOException e) {
             e.printStackTrace();
-            postEvent("关闭服务失败");
+            wsServerListener.onWsServerError(ERROR_TYPE_SERVER_CLOSE_FAIL);//关闭服务失败
         } catch (InterruptedException e) {
             e.printStackTrace();
-            postEvent("关闭服务失败");
+            wsServerListener.onWsServerError(ERROR_TYPE_SERVER_CLOSE_FAIL);//关闭服务失败
         }
     }
 
@@ -72,7 +78,7 @@ public class WsServer extends WebSocketServer {
         counter++;
         String connIp = conn.getRemoteSocketAddress().getAddress().toString().replace("/", "");
         connList.add(connIp);
-        postEvent("");
+        wsServerListener.onWsServerConnChanged(connList);
         Log.d(TAG, "onOpen: " + connIp);
         Log.d(TAG, "onOpen: ///////////Opened connection number  " + counter);
     }
@@ -106,8 +112,10 @@ public class WsServer extends WebSocketServer {
         ex.printStackTrace();
         if (ex.getMessage().contains("Address already in use")) {
             Log.e(TAG, "onError: 端口已被占用");
-            postEvent("服务启动失败，端口已被占用，请更换端口");
+            wsServerListener.onWsServerError(ERROR_TYPE_PORT_IN_USE);//服务启动失败，端口已被占用，请更换端口
+            return;
         }
+        wsServerListener.onWsServerError(ERROR_TYPE_NORMAL);
     }
 
     @Override
@@ -120,7 +128,7 @@ public class WsServer extends WebSocketServer {
                 connList.remove(ip);
             }
         }
-        postEvent("");
+        wsServerListener.onWsServerConnChanged(connList);
         Log.d(TAG, "onClosing: " + connIp);
         Log.d(TAG, "onClosing: ///////////Opened connection number  " + counter);
     }
@@ -129,11 +137,7 @@ public class WsServer extends WebSocketServer {
     public void onStart() {
         Log.d(TAG, "onStart: ");
         isRunning = true;
-        postEvent("服务启动成功");
-    }
-
-    private void postEvent(String msg) {
-        RxBus.getDefault().post(new WsServerStatusChangedEvent(isRunning, msg, connList));
+        wsServerListener.onWsServerStatusChanged(isRunning);//服务启动成功
     }
 
 }

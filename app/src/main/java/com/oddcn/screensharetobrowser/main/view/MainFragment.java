@@ -22,22 +22,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.oddcn.screensharetobrowser.R;
-import com.oddcn.screensharetobrowser.RxBus;
 import com.oddcn.screensharetobrowser.databinding.FragmentMainBinding;
-import com.oddcn.screensharetobrowser.main.model.entity.RecorderStatusChangedEvent;
-import com.oddcn.screensharetobrowser.main.model.entity.WsServerStatusChangedEvent;
 import com.oddcn.screensharetobrowser.main.viewModel.MainViewModel;
 import com.oddcn.screensharetobrowser.recorder.RecordService;
+import com.oddcn.screensharetobrowser.recorder.RecordServiceListener;
 import com.oddcn.screensharetobrowser.server.ServerService;
+import com.oddcn.screensharetobrowser.server.ServerServiceListener;
+import com.oddcn.screensharetobrowser.server.wsServer.WsServer;
 import com.oddcn.screensharetobrowser.utils.PermissionUtil;
 
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.functions.Consumer;
+import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.BIND_AUTO_CREATE;
 
 public class MainFragment extends Fragment {
+    private static final String TAG = "MainFragment";
 
     private FragmentMainBinding binding;
     private MainViewModel vm;
@@ -82,36 +82,6 @@ public class MainFragment extends Fragment {
     }
 
     private void initEvent() {
-        RxBus.getDefault()
-                .toObservable(WsServerStatusChangedEvent.class)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(new Consumer<WsServerStatusChangedEvent>() {
-                    @Override
-                    public void accept(WsServerStatusChangedEvent wsServerStatusChangedEvent) throws Exception {
-                        vm.isServerRunning.set(wsServerStatusChangedEvent.isServerRunning);
-                        vm.serverConnCount.set(wsServerStatusChangedEvent.connList.size());
-                        connAdapter.setData(wsServerStatusChangedEvent.connList);
-                        connAdapter.notifyDataSetChanged();
-                        if (!wsServerStatusChangedEvent.msg.isEmpty()) {
-                            Toast.makeText(getContext(), wsServerStatusChangedEvent.msg, Toast.LENGTH_SHORT).show();
-                        }
-                        if (wsServerStatusChangedEvent.msg.equals("服务启动成功")) {
-                            serverService.makeForeground();
-                        }
-
-                    }
-                })
-                .subscribe();
-        RxBus.getDefault()
-                .toObservable(RecorderStatusChangedEvent.class)
-                .observeOn(AndroidSchedulers.mainThread())
-                .doOnNext(new Consumer<RecorderStatusChangedEvent>() {
-                    @Override
-                    public void accept(RecorderStatusChangedEvent recorderStatusChangedEvent) throws Exception {
-                        vm.isRecorderRunning.set(recorderStatusChangedEvent.isRunning);
-                    }
-                })
-                .subscribe();
 
         projectionManager = (MediaProjectionManager) getActivity().getSystemService(getContext().MEDIA_PROJECTION_SERVICE);
 
@@ -183,6 +153,30 @@ public class MainFragment extends Fragment {
             ServerService.ServerServiceBinder binder = (ServerService.ServerServiceBinder) service;
             serverService = binder.getServerService();
             vm.isServerRunning.set(serverService.isRunning());
+
+            serverService.setListener(new ServerServiceListener() {
+                @Override
+                public void onServerStatusChanged(boolean isRunning) {
+                    vm.isServerRunning.set(isRunning);
+                }
+
+                @Override
+                public void onWsServerError(int errorType) {
+                    if (errorType == WsServer.ERROR_TYPE_NORMAL)
+                        Toast.makeText(serverService, "服务启动失败", Toast.LENGTH_SHORT).show();
+                    if (errorType == WsServer.ERROR_TYPE_PORT_IN_USE)
+                        Toast.makeText(serverService, "服务启动失败，端口已被占用，请更换端口", Toast.LENGTH_SHORT).show();
+                    if (errorType == WsServer.ERROR_TYPE_SERVER_CLOSE_FAIL)
+                        Toast.makeText(serverService, "关闭服务失败", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onWsServerConnChanged(List<String> connList) {
+                    vm.serverConnCount.set(connList.size());
+                    connAdapter.setData(connList);
+                    connAdapter.notifyDataSetChanged();
+                }
+            });
         }
 
         @Override
@@ -199,6 +193,13 @@ public class MainFragment extends Fragment {
             recordService = binder.getRecordService();
             recordService.setConfig(metrics.widthPixels, metrics.heightPixels, metrics.densityDpi);
             vm.isRecorderRunning.set(recordService.isRunning());
+
+            recordService.setListener(new RecordServiceListener() {
+                @Override
+                public void onRecorderStatusChanged(boolean isRunning) {
+                    vm.isRecorderRunning.set(isRunning);
+                }
+            });
         }
 
         @Override

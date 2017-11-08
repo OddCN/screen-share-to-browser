@@ -10,8 +10,12 @@ import android.support.annotation.Nullable;
 import com.oddcn.screensharetobrowser.main.view.MainActivity;
 import com.oddcn.screensharetobrowser.main.viewModel.MainViewModel;
 import com.oddcn.screensharetobrowser.server.wsServer.WsServer;
+import com.oddcn.screensharetobrowser.server.wsServer.WsServerListener;
 import com.oddcn.screensharetobrowser.utils.NetUtil;
 import com.oddcn.screensharetobrowser.utils.notifier.Notifier;
+
+import java.net.InetSocketAddress;
+import java.util.List;
 
 
 /**
@@ -20,20 +24,26 @@ import com.oddcn.screensharetobrowser.utils.notifier.Notifier;
 
 public class ServerService extends Service {
 
+    private ServerServiceListener serverServiceListener;
+
+    public void setListener(ServerServiceListener listener) {
+        serverServiceListener = listener;
+    }
+
+    private WsServer wsServer;
 
     public boolean isRunning() {
-        return WsServer.get().isRunning();
+        return wsServer.isRunning();
     }
 
     public void startServer() {
-        WsServer.init("0.0.0.0", MainViewModel.port.get());
-        WsServer.get().runAsync();
+        wsServer.runAsync();
     }
 
     public void stopServer() {
-        WsServer.get().stopWithException();
-        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        notificationManager.cancel(1);
+        wsServer.stopWithException();
+//        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
+//        notificationManager.cancel(1);
         stopForeground(true);
     }
 
@@ -46,6 +56,32 @@ public class ServerService extends Service {
                         .setActivityClass(MainActivity.class)
                         .build()
         );
+    }
+
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        WsServer.init("0.0.0.0", MainViewModel.port.get());
+        wsServer = WsServer.get();
+        wsServer.setListener(new WsServerListener() {
+            @Override
+            public void onWsServerStatusChanged(boolean isRunning) {
+                if (isRunning) {
+                    makeForeground();
+                }
+                serverServiceListener.onServerStatusChanged(isRunning);
+            }
+
+            @Override
+            public void onWsServerError(int errorType) {
+                serverServiceListener.onWsServerError(errorType);
+            }
+
+            @Override
+            public void onWsServerConnChanged(List<String> connList) {
+                serverServiceListener.onWsServerConnChanged(connList);
+            }
+        });
     }
 
     @Override

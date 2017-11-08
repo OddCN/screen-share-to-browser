@@ -53,6 +53,12 @@ public class RecordService extends Service {
     private ScreenHandler screenHandler;
     private ExecutorService executorService;
 
+    private RecordServiceListener recordServiceListener;
+
+    public void setListener(RecordServiceListener listener) {
+        recordServiceListener = listener;
+    }
+
     private class ScreenHandler extends Handler {
         public ScreenHandler(Looper looper) {
             super(looper);
@@ -127,7 +133,7 @@ public class RecordService extends Service {
         imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2);
         createVirtualDisplayForImageReader();
         running = true;
-        RxBus.getDefault().post(new RecorderStatusChangedEvent(running));
+        recordServiceListener.onRecorderStatusChanged(running);
         return true;
     }
 
@@ -151,7 +157,7 @@ public class RecordService extends Service {
 
         if (imageReader != null)
             imageReader.close();
-        RxBus.getDefault().post(new RecorderStatusChangedEvent(running));
+        recordServiceListener.onRecorderStatusChanged(running);
         return true;
     }
 
@@ -184,7 +190,7 @@ public class RecordService extends Service {
                         bitmap.copyPixelsFromBuffer(buffer);
                         bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        int options_ = 10;
+                        int options_ = 0;
                         bitmap.compress(Bitmap.CompressFormat.JPEG, options_, byteArrayOutputStream);
 
                         MyWebSocketStreamWork myWebSocketStreamWork =

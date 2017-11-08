@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class MyWebSocketStreamWork implements Runnable {
     private static final String TAG = "MyWebSocketStreamWork";
-    private byte byteBuffer[] = new byte[1024];//缓冲字节数组
+//    private byte byteBuffer[] = new byte[1024];//缓冲字节数组
     private ByteArrayOutputStream byteArrayOutputStream;
 
     public MyWebSocketStreamWork(ByteArrayOutputStream byteArrayOutputStream) {
