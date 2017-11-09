@@ -2,8 +2,11 @@ package com.oddcn.screensharetobrowser.main.view;
 
 
 import android.Manifest;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.media.projection.MediaProjection;
 import android.media.projection.MediaProjectionManager;
@@ -51,6 +54,8 @@ public class MainFragment extends Fragment {
 
     private ConnAdapter connAdapter;
 
+    private BroadcastReceiver broadcastReceiverNetworkState;
+
     public MainFragment() {
     }
 
@@ -82,7 +87,7 @@ public class MainFragment extends Fragment {
     }
 
     private void initEvent() {
-
+        initBroadcastReceiverNetworkStateChanged();
         projectionManager = (MediaProjectionManager) getActivity().getSystemService(getContext().MEDIA_PROJECTION_SERVICE);
 
         Intent serverIntent = new Intent(getActivity(), ServerService.class);
@@ -211,6 +216,9 @@ public class MainFragment extends Fragment {
     public void onDestroy() {
         getActivity().unbindService(serverConnection);
         getActivity().unbindService(recorderConnection);
+        if (broadcastReceiverNetworkState != null) {
+            getActivity().unregisterReceiver(broadcastReceiverNetworkState);
+        }
         super.onDestroy();
     }
 
@@ -239,5 +247,18 @@ public class MainFragment extends Fragment {
             container.addView(textView);
             return textView;
         }
+    }
+
+    private void initBroadcastReceiverNetworkStateChanged() {
+        final IntentFilter filters = new IntentFilter();
+        filters.addAction("android.net.wifi.WIFI_STATE_CHANGED");
+        filters.addAction("android.net.wifi.STATE_CHANGE");
+        broadcastReceiverNetworkState = new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                vm.refreshIp();
+            }
+        };
+        getActivity().registerReceiver(broadcastReceiverNetworkState, filters);
     }
 }
