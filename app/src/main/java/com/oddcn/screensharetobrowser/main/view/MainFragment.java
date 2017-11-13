@@ -117,7 +117,6 @@ public class MainFragment extends Fragment {
                             public void onGranted() {
                                 if (recordService.isRunning()) {
                                     recordService.stopRecord();
-                                    vm.isRecorderRunning.set(false);
                                 } else {
                                     Intent captureIntent = projectionManager.createScreenCaptureIntent();
                                     startActivityForResult(captureIntent, RECORD_REQUEST_CODE);
@@ -146,7 +145,6 @@ public class MainFragment extends Fragment {
                 @Override
                 public void run() {
                     recordService.startRecord();
-                    vm.isRecorderRunning.set(true);
                 }
             }).start();
         }

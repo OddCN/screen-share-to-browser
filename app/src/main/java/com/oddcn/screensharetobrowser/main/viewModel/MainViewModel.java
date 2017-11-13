@@ -33,9 +33,7 @@ public class MainViewModel {
     public MainViewModel(Context context) {
         this.context = context;
         port.set(8123);
-        isServerRunning.set(false);
         serverConnCount.set(0);
-        isRecorderRunning.set(false);
     }
 
     public void refreshIp() {

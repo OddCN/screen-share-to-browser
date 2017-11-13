@@ -26,9 +26,13 @@
             </intent-filter>
         </activity>
 
+        <service android:name=".server.ServerService" />
         <service android:name=".recorder.RecordService" />
 
-        <service android:name=".server.ServerService" />
+        <receiver android:name=".server.WsServerStatusReceiver" />
+        <receiver android:name=".server.WebServerStatusReceiver" />
+        <receiver android:name=".main.model.data.ServerStatusReceiver" />
+        <receiver android:name=".main.model.data.RecorderStatusReceiver" />
 
     </application>
 
