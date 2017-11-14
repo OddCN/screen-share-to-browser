@@ -79,8 +79,7 @@ public class WsServer extends WebSocketServer {
         String connIp = conn.getRemoteSocketAddress().getAddress().toString().replace("/", "");
         connList.add(connIp);
         wsServerListener.onWsServerConnChanged(connList);
-        Log.d(TAG, "onOpen: " + connIp);
-        Log.d(TAG, "onOpen: ///////////Opened connection number  " + counter);
+        Log.d(TAG, "onOpen: // " + connIp + " //Opened connection number  " + counter);
     }
 
     @Override
@@ -129,15 +128,14 @@ public class WsServer extends WebSocketServer {
             }
         }
         wsServerListener.onWsServerConnChanged(connList);
-        Log.d(TAG, "onClosing: " + connIp);
-        Log.d(TAG, "onClosing: ///////////Opened connection number  " + counter);
+        Log.d(TAG, "onClosing: // " + connIp + " //Opened connection number  " + counter);
     }
 
     @Override
     public void onStart() {
-        Log.d(TAG, "onStart: ");
         isRunning = true;
         wsServerListener.onWsServerStatusChanged(isRunning);//服务启动成功
+        Log.d(TAG, "onStart: ");
     }
 
 }

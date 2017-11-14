@@ -31,8 +31,6 @@
 
         <receiver android:name=".server.WsServerStatusReceiver" />
         <receiver android:name=".server.WebServerStatusReceiver" />
-        <receiver android:name=".main.model.data.ServerStatusReceiver" />
-        <receiver android:name=".main.model.data.RecorderStatusReceiver" />
 
     </application>
 

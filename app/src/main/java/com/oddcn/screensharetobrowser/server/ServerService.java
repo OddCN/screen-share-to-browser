@@ -6,16 +6,22 @@ import android.content.Intent;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
+import android.util.Log;
 
+import com.oddcn.screensharetobrowser.RxBus;
 import com.oddcn.screensharetobrowser.main.view.MainActivity;
 import com.oddcn.screensharetobrowser.main.viewModel.MainViewModel;
+import com.oddcn.screensharetobrowser.server.webServer.WebServer;
 import com.oddcn.screensharetobrowser.server.wsServer.WsServer;
 import com.oddcn.screensharetobrowser.server.wsServer.WsServerListener;
 import com.oddcn.screensharetobrowser.utils.NetUtil;
 import com.oddcn.screensharetobrowser.utils.notifier.Notifier;
+import com.yanzhenjie.andserver.Server;
 
 import java.net.InetSocketAddress;
 import java.util.List;
+
+import io.reactivex.functions.Consumer;
 
 
 /**
@@ -23,28 +29,12 @@ import java.util.List;
  */
 
 public class ServerService extends Service {
+    private static final String TAG = "ServerService";
 
     private ServerServiceListener serverServiceListener;
 
     public void setListener(ServerServiceListener listener) {
         serverServiceListener = listener;
-    }
-
-    private WsServer wsServer;
-
-    public boolean isRunning() {
-        return wsServer.isRunning();
-    }
-
-    public void startServer() {
-        wsServer.runAsync();
-    }
-
-    public void stopServer() {
-        wsServer.stopWithException();
-//        NotificationManager notificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-//        notificationManager.cancel(1);
-        stopForeground(true);
     }
 
     public void makeForeground() {
@@ -58,10 +48,32 @@ public class ServerService extends Service {
         );
     }
 
+    private WsServer wsServer;
+
+    private Server webServer;
+
     @Override
     public void onCreate() {
         super.onCreate();
-        WsServer.init("0.0.0.0", MainViewModel.port.get());
+        webServer = WebServer.init(getAssets(), MainViewModel.port.get(), new Server.Listener() {
+            @Override
+            public void onStarted() {
+                Log.d(TAG, "web server onStarted: ");
+            }
+
+            @Override
+            public void onStopped() {
+                Log.d(TAG, "web server onStopped: ");
+            }
+
+            @Override
+            public void onError(Exception e) {
+                Log.d(TAG, "web server onError: ");
+                e.printStackTrace();
+            }
+        });
+
+        WsServer.init("0.0.0.0", 8012);
         wsServer = WsServer.get();
         wsServer.setListener(new WsServerListener() {
             @Override
@@ -82,6 +94,22 @@ public class ServerService extends Service {
                 serverServiceListener.onWsServerConnChanged(connList);
             }
         });
+    }
+
+
+    public boolean isRunning() {
+        return wsServer.isRunning();
+    }
+
+    public void startServer() {
+        webServer.start();
+        wsServer.runAsync();
+    }
+
+    public void stopServer() {
+        webServer.stop();
+        wsServer.stopWithException();
+        stopForeground(true);
     }
 
     @Override

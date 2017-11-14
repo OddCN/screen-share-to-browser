@@ -164,20 +164,30 @@ public class MainFragment extends Fragment {
                 }
 
                 @Override
-                public void onWsServerError(int errorType) {
-                    if (errorType == WsServer.ERROR_TYPE_NORMAL)
-                        Toast.makeText(serverService, "服务启动失败", Toast.LENGTH_SHORT).show();
-                    if (errorType == WsServer.ERROR_TYPE_PORT_IN_USE)
-                        Toast.makeText(serverService, "服务启动失败，端口已被占用，请更换端口", Toast.LENGTH_SHORT).show();
-                    if (errorType == WsServer.ERROR_TYPE_SERVER_CLOSE_FAIL)
-                        Toast.makeText(serverService, "关闭服务失败", Toast.LENGTH_SHORT).show();
+                public void onWsServerError(final int errorType) {
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            if (errorType == WsServer.ERROR_TYPE_NORMAL)
+                                Toast.makeText(serverService, "服务启动失败", Toast.LENGTH_SHORT).show();
+                            if (errorType == WsServer.ERROR_TYPE_PORT_IN_USE)
+                                Toast.makeText(serverService, "服务启动失败，端口已被占用，请更换端口", Toast.LENGTH_SHORT).show();
+                            if (errorType == WsServer.ERROR_TYPE_SERVER_CLOSE_FAIL)
+                                Toast.makeText(serverService, "关闭服务失败", Toast.LENGTH_SHORT).show();
+                        }
+                    });
                 }
 
                 @Override
-                public void onWsServerConnChanged(List<String> connList) {
+                public void onWsServerConnChanged(final List<String> connList) {
                     vm.serverConnCount.set(connList.size());
-                    connAdapter.setData(connList);
-                    connAdapter.notifyDataSetChanged();
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            connAdapter.setData(connList);
+                            connAdapter.notifyDataSetChanged();
+                        }
+                    });
                 }
             });
         }
