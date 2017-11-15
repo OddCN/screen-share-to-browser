@@ -190,7 +190,7 @@ public class RecordService extends Service {
                         bitmap.copyPixelsFromBuffer(buffer);
                         bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
                         ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        int options_ = 0;
+                        int options_ = 10;
                         bitmap.compress(Bitmap.CompressFormat.JPEG, options_, byteArrayOutputStream);
 
                         MyWebSocketStreamWork myWebSocketStreamWork =

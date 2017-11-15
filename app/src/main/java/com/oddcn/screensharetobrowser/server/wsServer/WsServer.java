@@ -36,32 +36,26 @@ public class WsServer extends WebSocketServer {
 
     private int counter = 0;
 
-    private static WsServer wsServer;
-
     public WsServer(InetSocketAddress address) {
         super(address);
     }
 
-    public static void init(String host, int port) {
-        wsServer = new WsServer(new InetSocketAddress(host, port));
-    }
-
-    public static WsServer get() {
-        return wsServer;
+    public static WsServer init(String host, int port) {
+        return new WsServer(new InetSocketAddress(host, port));
     }
 
     public void runAsync() {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                wsServer.run();
+                WsServer.this.run();
             }
         }).start();
     }
 
     public void stopWithException() {
         try {
-            wsServer.stop();
+            this.stop();
             isRunning = false;
             wsServerListener.onWsServerStatusChanged(isRunning);
         } catch (IOException e) {
@@ -109,10 +103,12 @@ public class WsServer extends WebSocketServer {
     public void onError(WebSocket conn, Exception ex) {
         Log.d(TAG, "onError: " + ex.getMessage());
         ex.printStackTrace();
-        if (ex.getMessage().contains("Address already in use")) {
-            Log.e(TAG, "onError: 端口已被占用");
-            wsServerListener.onWsServerError(ERROR_TYPE_PORT_IN_USE);//服务启动失败，端口已被占用，请更换端口
-            return;
+        if (ex.getMessage() != null) {
+            if (ex.getMessage().contains("Address already in use")) {
+                Log.e(TAG, "onError: 端口已被占用");
+                wsServerListener.onWsServerError(ERROR_TYPE_PORT_IN_USE);//服务启动失败，端口已被占用，请更换端口
+                return;
+            }
         }
         wsServerListener.onWsServerError(ERROR_TYPE_NORMAL);
     }

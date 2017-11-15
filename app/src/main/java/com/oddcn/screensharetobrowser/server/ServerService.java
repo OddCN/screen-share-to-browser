@@ -18,10 +18,15 @@ import com.oddcn.screensharetobrowser.utils.NetUtil;
 import com.oddcn.screensharetobrowser.utils.notifier.Notifier;
 import com.yanzhenjie.andserver.Server;
 
+import java.io.ByteArrayOutputStream;
 import java.net.InetSocketAddress;
 import java.util.List;
 
+import io.reactivex.Scheduler;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
+import io.reactivex.schedulers.Schedulers;
 
 
 /**
@@ -52,9 +57,26 @@ public class ServerService extends Service {
 
     private Server webServer;
 
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
     @Override
     public void onCreate() {
         super.onCreate();
+
+        createWebServer();
+
+        createWsServer();
+
+        Disposable disposable = RxBus.getDefault().register(String.class, new Consumer() {
+            @Override
+            public void accept(Object o) throws Exception {
+                wsServer.broadcast((String) o);
+            }
+        }, Schedulers.io());
+        compositeDisposable.add(disposable);
+    }
+
+    private void createWebServer() {
         webServer = WebServer.init(getAssets(), MainViewModel.port.get(), new Server.Listener() {
             @Override
             public void onStarted() {
@@ -72,9 +94,10 @@ public class ServerService extends Service {
                 e.printStackTrace();
             }
         });
+    }
 
-        WsServer.init("0.0.0.0", 8012);
-        wsServer = WsServer.get();
+    private void createWsServer() {
+        wsServer = WsServer.init("0.0.0.0", 8012);
         wsServer.setListener(new WsServerListener() {
             @Override
             public void onWsServerStatusChanged(boolean isRunning) {
@@ -96,25 +119,27 @@ public class ServerService extends Service {
         });
     }
 
-
     public boolean isRunning() {
-        return wsServer.isRunning();
+        return webServer.isRunning();
     }
 
     public void startServer() {
         webServer.start();
+        createWsServer();
         wsServer.runAsync();
     }
 
     public void stopServer() {
         webServer.stop();
         wsServer.stopWithException();
+        wsServer = null;
         stopForeground(true);
     }
 
     @Override
     public void onDestroy() {
         stopServer();
+        RxBus.getDefault().unRegister(compositeDisposable);
         super.onDestroy();
     }
 
