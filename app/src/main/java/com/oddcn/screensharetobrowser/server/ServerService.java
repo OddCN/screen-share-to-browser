@@ -125,14 +125,13 @@ public class ServerService extends Service {
 
     public void startServer() {
         webServer.start();
-        createWsServer();
         wsServer.runAsync();
     }
 
     public void stopServer() {
         webServer.stop();
         wsServer.stopWithException();
-        wsServer = null;
+        createWsServer();
         stopForeground(true);
     }
 

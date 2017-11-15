@@ -48,7 +48,7 @@ public class WsServer extends WebSocketServer {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                WsServer.this.run();
+                WsServer.this.start();
             }
         }).start();
     }
