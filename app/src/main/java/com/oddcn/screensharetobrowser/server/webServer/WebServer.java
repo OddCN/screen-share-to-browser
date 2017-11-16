@@ -15,6 +15,9 @@ import com.yanzhenjie.andserver.website.AssetsWebsite;
 public class WebServer {
     private static final String TAG = "WebServer";
 
+    public static final int ERROR_TYPE_NORMAL = 0;
+    public static final int ERROR_TYPE_PORT_IN_USE = 1;
+
     public static Server init(AssetManager assetManager, int port, Server.Listener listener) {
         AndServer andServer = new AndServer.Build()
                 .port(port)

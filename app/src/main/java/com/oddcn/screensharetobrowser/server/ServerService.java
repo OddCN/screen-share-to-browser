@@ -1,6 +1,5 @@
 package com.oddcn.screensharetobrowser.server;
 
-import android.app.NotificationManager;
 import android.app.Service;
 import android.content.Intent;
 import android.os.Binder;
@@ -18,11 +17,8 @@ import com.oddcn.screensharetobrowser.utils.NetUtil;
 import com.oddcn.screensharetobrowser.utils.notifier.Notifier;
 import com.yanzhenjie.andserver.Server;
 
-import java.io.ByteArrayOutputStream;
-import java.net.InetSocketAddress;
 import java.util.List;
 
-import io.reactivex.Scheduler;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -47,7 +43,7 @@ public class ServerService extends Service {
                 1,
                 Notifier.from(this)
                         .setTitle("屏幕分享服务")
-                        .setText("本机 " + NetUtil.getWifiIp(this) + ":" + MainViewModel.port.get())
+                        .setText("本机 " + NetUtil.getWifiIp(this) + ":" + MainViewModel.webServerPort.get())
                         .setActivityClass(MainActivity.class)
                         .build()
         );
@@ -63,10 +59,6 @@ public class ServerService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        createWebServer();
-
-        createWsServer();
-
         Disposable disposable = RxBus.getDefault().register(String.class, new Consumer() {
             @Override
             public void accept(Object o) throws Exception {
@@ -77,38 +69,52 @@ public class ServerService extends Service {
     }
 
     private void createWebServer() {
-        webServer = WebServer.init(getAssets(), MainViewModel.port.get(), new Server.Listener() {
+        webServer = WebServer.init(getAssets(), MainViewModel.webServerPort.get(), new Server.Listener() {
             @Override
             public void onStarted() {
                 Log.d(TAG, "web server onStarted: ");
+                serverServiceListener.onServerStatusChanged(true);
             }
 
             @Override
             public void onStopped() {
                 Log.d(TAG, "web server onStopped: ");
+                serverServiceListener.onServerStatusChanged(false);
             }
 
             @Override
             public void onError(Exception e) {
                 Log.d(TAG, "web server onError: ");
                 e.printStackTrace();
+                if (e.getMessage() != null) {
+                    if (e.getMessage().contains("Address already in use")) {
+                        Log.e(TAG, "web server: 端口已被占用");
+                        serverServiceListener.onWebServerError(WebServer.ERROR_TYPE_PORT_IN_USE);
+                        return;
+                    }
+                }
+                serverServiceListener.onWebServerError(WebServer.ERROR_TYPE_NORMAL);
             }
         });
     }
 
     private void createWsServer() {
-        wsServer = WsServer.init("0.0.0.0", 8012);
+        wsServer = WsServer.init("0.0.0.0", MainViewModel.wsServerPort.get());
         wsServer.setListener(new WsServerListener() {
             @Override
             public void onWsServerStatusChanged(boolean isRunning) {
-                if (isRunning) {
-                    makeForeground();
-                }
-                serverServiceListener.onServerStatusChanged(isRunning);
             }
 
             @Override
             public void onWsServerError(int errorType) {
+                if (errorType == WsServer.ERROR_TYPE_PORT_IN_USE) {
+                    int randomPort = NetUtil.getRandomPort();
+                    MainViewModel.wsServerPort.set(randomPort);
+                    createWsServer();
+                    Log.e(TAG, "onWsServerError: already change random port " + randomPort);
+                    wsServer.start();
+                    return;
+                }
                 serverServiceListener.onWsServerError(errorType);
             }
 
@@ -120,18 +126,19 @@ public class ServerService extends Service {
     }
 
     public boolean isRunning() {
-        return webServer.isRunning();
+        return webServer != null && webServer.isRunning();
     }
 
     public void startServer() {
+        createWebServer();
         webServer.start();
-        wsServer.runAsync();
+        createWsServer();
+        wsServer.start();
     }
 
     public void stopServer() {
         webServer.stop();
         wsServer.stopWithException();
-        createWsServer();
         stopForeground(true);
     }
 

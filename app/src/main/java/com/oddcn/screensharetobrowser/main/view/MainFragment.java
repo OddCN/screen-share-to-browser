@@ -31,6 +31,7 @@ import com.oddcn.screensharetobrowser.recorder.RecordService;
 import com.oddcn.screensharetobrowser.recorder.RecordServiceListener;
 import com.oddcn.screensharetobrowser.server.ServerService;
 import com.oddcn.screensharetobrowser.server.ServerServiceListener;
+import com.oddcn.screensharetobrowser.server.webServer.WebServer;
 import com.oddcn.screensharetobrowser.server.wsServer.WsServer;
 import com.oddcn.screensharetobrowser.utils.PermissionUtil;
 
@@ -164,18 +165,18 @@ public class MainFragment extends Fragment {
                 }
 
                 @Override
-                public void onWsServerError(final int errorType) {
+                public void onWebServerError(final int errorType) {
                     getActivity().runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            if (errorType == WsServer.ERROR_TYPE_NORMAL)
-                                Toast.makeText(serverService, "服务启动失败", Toast.LENGTH_SHORT).show();
-                            if (errorType == WsServer.ERROR_TYPE_PORT_IN_USE)
+                            if (errorType == WebServer.ERROR_TYPE_PORT_IN_USE)
                                 Toast.makeText(serverService, "服务启动失败，端口已被占用，请更换端口", Toast.LENGTH_SHORT).show();
-                            if (errorType == WsServer.ERROR_TYPE_SERVER_CLOSE_FAIL)
-                                Toast.makeText(serverService, "关闭服务失败", Toast.LENGTH_SHORT).show();
                         }
                     });
+                }
+
+                @Override
+                public void onWsServerError(final int errorType) {
                 }
 
                 @Override

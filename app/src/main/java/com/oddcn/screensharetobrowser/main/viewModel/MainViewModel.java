@@ -9,8 +9,6 @@ import android.widget.Toast;
 
 import com.oddcn.screensharetobrowser.utils.NetUtil;
 
-import java.util.Random;
-
 /**
  * Created by oddzh on 2017/10/30.
  */
@@ -20,9 +18,8 @@ public class MainViewModel {
     private Context context;
 
     public ObservableField<String> localIpText = new ObservableField<>();
-    public static ObservableInt port = new ObservableInt();
-    private static final int PORT_MIN = 1024;
-    private static final int PORT_MAX = 49151;
+    public static ObservableInt webServerPort = new ObservableInt();
+    public static ObservableInt wsServerPort = new ObservableInt();
 
     public ObservableBoolean isServerRunning = new ObservableBoolean();
 
@@ -32,7 +29,8 @@ public class MainViewModel {
 
     public MainViewModel(Context context) {
         this.context = context;
-        port.set(8123);
+        webServerPort.set(8123);
+        wsServerPort.set(8012);
         serverConnCount.set(0);
     }
 
@@ -56,9 +54,10 @@ public class MainViewModel {
             public void onClick(View v) {
                 if (isServerRunning.get()) {
                     Toast.makeText(context, "服务运行中，不可更改", Toast.LENGTH_SHORT).show();
+                    return;
                 }
-                int randomPort = new Random().nextInt(PORT_MAX - PORT_MIN) + PORT_MIN;
-                port.set(randomPort);
+                int randomPort = NetUtil.getRandomPort();
+                webServerPort.set(randomPort);
                 refreshIp();
             }
         };

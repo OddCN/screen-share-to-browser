@@ -1,10 +1,6 @@
 package com.oddcn.screensharetobrowser.server.wsServer;
 
 import android.util.Log;
-import android.widget.Toast;
-
-import com.oddcn.screensharetobrowser.RxBus;
-import com.oddcn.screensharetobrowser.main.model.entity.WsServerStatusChangedEvent;
 
 import org.java_websocket.WebSocket;
 import org.java_websocket.handshake.ClientHandshake;
@@ -44,20 +40,11 @@ public class WsServer extends WebSocketServer {
         return new WsServer(new InetSocketAddress(host, port));
     }
 
-    public void runAsync() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                WsServer.this.start();
-            }
-        }).start();
-    }
-
     public void stopWithException() {
         try {
             this.stop();
-            isRunning = false;
-            wsServerListener.onWsServerStatusChanged(isRunning);
+            running = false;
+            wsServerListener.onWsServerStatusChanged(running);
         } catch (IOException e) {
             e.printStackTrace();
             wsServerListener.onWsServerError(ERROR_TYPE_SERVER_CLOSE_FAIL);//关闭服务失败
@@ -91,10 +78,10 @@ public class WsServer extends WebSocketServer {
         Log.d(TAG, "onMessage: buffer");
     }
 
-    private boolean isRunning = false;
+    private boolean running = false;
 
     public boolean isRunning() {
-        return isRunning;
+        return running;
     }
 
     private List<String> connList = new ArrayList<>();
@@ -105,7 +92,7 @@ public class WsServer extends WebSocketServer {
         ex.printStackTrace();
         if (ex.getMessage() != null) {
             if (ex.getMessage().contains("Address already in use")) {
-                Log.e(TAG, "onError: 端口已被占用");
+                Log.d(TAG, "ws server: 端口已被占用");
                 wsServerListener.onWsServerError(ERROR_TYPE_PORT_IN_USE);//服务启动失败，端口已被占用，请更换端口
                 return;
             }
@@ -129,8 +116,8 @@ public class WsServer extends WebSocketServer {
 
     @Override
     public void onStart() {
-        isRunning = true;
-        wsServerListener.onWsServerStatusChanged(isRunning);//服务启动成功
+        running = true;
+        wsServerListener.onWsServerStatusChanged(running);//服务启动成功
         Log.d(TAG, "onStart: ");
     }
 

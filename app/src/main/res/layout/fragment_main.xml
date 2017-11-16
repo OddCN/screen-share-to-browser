@@ -95,7 +95,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:padding="8dp"
-                    android:text="@={`` + vm.port}"
+                    android:text="@={`` + vm.webServerPort}"
                     android:textColor="@color/colorAccent" />
 
             </LinearLayout>
@@ -156,7 +156,7 @@
                 android:paddingBottom="8dp"
                 android:paddingStart="16dp"
                 android:paddingTop="8dp"
-                android:text="@{vm.isServerRunning ? `服务已在`+ vm.localIpText+`:`+vm.port+`启动`:`服务未启动`}" />
+                android:text="@{vm.isServerRunning ? `服务已在`+ vm.localIpText+`:`+vm.webServerPort+`启动`:`服务未启动`}" />
 
             <LinearLayout
                 android:layout_width="match_parent"

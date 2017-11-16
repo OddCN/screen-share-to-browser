@@ -9,6 +9,8 @@ import java.util.List;
 public interface ServerServiceListener {
     void onServerStatusChanged(boolean isRunning);
 
+    void onWebServerError(int errorType);
+
     void onWsServerError(int errorType);
 
     void onWsServerConnChanged(List<String> connList);

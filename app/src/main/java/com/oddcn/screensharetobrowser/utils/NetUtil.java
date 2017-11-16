@@ -9,12 +9,15 @@ import java.net.NetworkInterface;
 import java.net.SocketException;
 import java.util.Enumeration;
 import java.util.Locale;
+import java.util.Random;
 
 /**
  * Created by oddzh on 2017/10/27.
  */
 
 public class NetUtil {
+    private static final int PORT_MIN = 1024;
+    private static final int PORT_MAX = 49151;
 
     public static String getIp() {
         try {
@@ -40,5 +43,9 @@ public class NetUtil {
         int ipAddressInt = wm.getConnectionInfo().getIpAddress();
         String ipAddress = String.format(Locale.getDefault(), "%d.%d.%d.%d", (ipAddressInt & 0xff), (ipAddressInt >> 8 & 0xff), (ipAddressInt >> 16 & 0xff), (ipAddressInt >> 24 & 0xff));
         return ipAddress;
+    }
+
+    public static int getRandomPort() {
+        return new Random().nextInt(PORT_MAX - PORT_MIN) + PORT_MIN;
     }
 }
