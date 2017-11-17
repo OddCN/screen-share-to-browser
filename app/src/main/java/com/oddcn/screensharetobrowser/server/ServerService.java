@@ -2,6 +2,7 @@ package com.oddcn.screensharetobrowser.server;
 
 import android.app.Service;
 import android.content.Intent;
+import android.content.res.AssetManager;
 import android.os.Binder;
 import android.os.IBinder;
 import android.support.annotation.Nullable;
@@ -16,6 +17,8 @@ import com.oddcn.screensharetobrowser.server.wsServer.WsServerListener;
 import com.oddcn.screensharetobrowser.utils.NetUtil;
 import com.oddcn.screensharetobrowser.utils.notifier.Notifier;
 import com.yanzhenjie.andserver.Server;
+
+import org.w3c.dom.NameList;
 
 import java.util.List;
 
@@ -55,6 +58,8 @@ public class ServerService extends Service {
 
     private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
+    private AssetManager mAssetManager;
+
     @Override
     public void onCreate() {
         super.onCreate();
@@ -66,10 +71,12 @@ public class ServerService extends Service {
             }
         }, Schedulers.io());
         compositeDisposable.add(disposable);
+
+        mAssetManager = getAssets();
     }
 
     private void createWebServer() {
-        webServer = WebServer.init(getAssets(), MainViewModel.webServerPort.get(), new Server.Listener() {
+        webServer = WebServer.init(mAssetManager, MainViewModel.webServerPort.get(), new Server.Listener() {
             @Override
             public void onStarted() {
                 Log.d(TAG, "web server onStarted: ");
@@ -146,6 +153,9 @@ public class ServerService extends Service {
     public void onDestroy() {
         stopServer();
         RxBus.getDefault().unRegister(compositeDisposable);
+        if (mAssetManager != null) {
+            mAssetManager.close();
+        }
         super.onDestroy();
     }
 
