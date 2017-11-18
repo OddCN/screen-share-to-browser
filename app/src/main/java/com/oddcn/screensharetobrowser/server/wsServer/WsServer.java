@@ -3,7 +3,10 @@ package com.oddcn.screensharetobrowser.server.wsServer;
 import android.util.Log;
 
 import org.java_websocket.WebSocket;
+import org.java_websocket.exceptions.InvalidDataException;
+import org.java_websocket.framing.Framedata;
 import org.java_websocket.handshake.ClientHandshake;
+import org.java_websocket.handshake.ServerHandshake;
 import org.java_websocket.server.WebSocketServer;
 
 import java.io.IOException;
@@ -30,8 +33,6 @@ public class WsServer extends WebSocketServer {
         wsServerListener = listener;
     }
 
-    private int counter = 0;
-
     public WsServer(InetSocketAddress address) {
         super(address);
     }
@@ -56,11 +57,10 @@ public class WsServer extends WebSocketServer {
 
     @Override
     public void onOpen(WebSocket conn, ClientHandshake handshake) {
-        counter++;
         String connIp = conn.getRemoteSocketAddress().getAddress().toString().replace("/", "");
         connList.add(connIp);
         wsServerListener.onWsServerConnChanged(connList);
-        Log.d(TAG, "onOpen: // " + connIp + " //Opened connection number  " + counter);
+        Log.d(TAG, "onOpen: // " + connIp + " //Opened connection number  " + connList.size());
     }
 
     @Override
@@ -103,15 +103,15 @@ public class WsServer extends WebSocketServer {
     @Override
     public void onClosing(WebSocket conn, int code, String reason, boolean remote) {
         super.onClosing(conn, code, reason, remote);
-        counter--;
         String connIp = conn.getRemoteSocketAddress().getAddress().toString().replace("/", "");
         for (String ip : connList) {
             if (ip.equals(connIp)) {
                 connList.remove(ip);
+                break;
             }
         }
         wsServerListener.onWsServerConnChanged(connList);
-        Log.d(TAG, "onClosing: // " + connIp + " //Opened connection number  " + counter);
+        Log.d(TAG, "onClosing: // " + connIp + " //Opened connection number  " + connList.size());
     }
 
     @Override

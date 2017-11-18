@@ -2,6 +2,7 @@ package com.oddcn.screensharetobrowser.server.webServer;
 
 import android.content.res.AssetManager;
 
+import com.oddcn.screensharetobrowser.server.webServer.response.RequestWsInfoHandler;
 import com.yanzhenjie.andserver.AndServer;
 import com.yanzhenjie.andserver.Server;
 import com.yanzhenjie.andserver.website.AssetsWebsite;
@@ -20,7 +21,8 @@ public class WebServer {
         AndServer andServer = new AndServer.Build()
                 .port(port)
                 .timeout(10 * 1000)
-                .website(new AssetsWebsite(assetManager, "web"))
+                .registerHandler("wsinfo",new RequestWsInfoHandler())
+                .website(new AssetsWebsite(assetManager, ""))
                 .listener(listener)
                 .build();
 

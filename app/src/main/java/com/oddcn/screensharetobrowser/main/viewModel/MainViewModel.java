@@ -17,7 +17,7 @@ public class MainViewModel {
 
     private Context context;
 
-    public ObservableField<String> localIpText = new ObservableField<>();
+    public static ObservableField<String> localIpText = new ObservableField<>();
     public static ObservableInt webServerPort = new ObservableInt();
     public static ObservableInt wsServerPort = new ObservableInt();
 

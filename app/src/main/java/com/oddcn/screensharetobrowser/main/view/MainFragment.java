@@ -35,6 +35,7 @@ import com.oddcn.screensharetobrowser.server.webServer.WebServer;
 import com.oddcn.screensharetobrowser.server.wsServer.WsServer;
 import com.oddcn.screensharetobrowser.utils.PermissionUtil;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static android.app.Activity.RESULT_OK;
@@ -162,6 +163,15 @@ public class MainFragment extends Fragment {
                 @Override
                 public void onServerStatusChanged(boolean isRunning) {
                     vm.isServerRunning.set(isRunning);
+                    vm.serverConnCount.set(0);
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            List<String> emptyConns = new ArrayList<>();
+                            connAdapter.setData(emptyConns);
+                            connAdapter.notifyDataSetChanged();
+                        }
+                    });
                 }
 
                 @Override

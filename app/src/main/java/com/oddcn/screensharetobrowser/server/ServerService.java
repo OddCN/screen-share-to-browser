@@ -18,8 +18,6 @@ import com.oddcn.screensharetobrowser.utils.NetUtil;
 import com.oddcn.screensharetobrowser.utils.notifier.Notifier;
 import com.yanzhenjie.andserver.Server;
 
-import org.w3c.dom.NameList;
-
 import java.util.List;
 
 import io.reactivex.disposables.CompositeDisposable;
