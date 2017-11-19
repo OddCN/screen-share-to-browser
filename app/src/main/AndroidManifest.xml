@@ -29,9 +29,6 @@
         <service android:name=".server.ServerService" />
         <service android:name=".recorder.RecordService" />
 
-        <receiver android:name=".server.WsServerStatusReceiver" />
-        <receiver android:name=".server.WebServerStatusReceiver" />
-
     </application>
 
 </manifest>
