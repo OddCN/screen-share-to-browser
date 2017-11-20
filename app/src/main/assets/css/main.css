@@ -6,7 +6,7 @@
 	Free for personal and commercial use under the CCA 3.0 license (html5up.net/license)
 */
 #image{
-	width: 20em
+	height: 80vh;
 }
 
 /* Reset */
@@ -3888,8 +3888,8 @@
 		@media screen and (max-width: 980px) {
 
 			#header {
-				height: auto;
-				min-height: 0;
+				/*height: auto;*/
+				/*min-height: 0;*/
 			}
 
 				#header .content {
