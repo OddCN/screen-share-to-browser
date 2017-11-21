@@ -17,6 +17,8 @@ public class MainViewModel {
 
     private Context context;
 
+    public static ObservableInt mode = new ObservableInt();// 0 wifi , 1 hotspot
+
     public static ObservableField<String> localIpText = new ObservableField<>();
     public static ObservableInt webServerPort = new ObservableInt();
     public static ObservableInt wsServerPort = new ObservableInt();
@@ -29,6 +31,7 @@ public class MainViewModel {
 
     public MainViewModel(Context context) {
         this.context = context;
+        mode.set(0);
         webServerPort.set(8123);
         wsServerPort.set(8012);
         serverConnCount.set(0);

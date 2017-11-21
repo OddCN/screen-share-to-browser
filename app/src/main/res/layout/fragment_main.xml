@@ -26,6 +26,44 @@
             android:layout_height="match_parent"
             android:orientation="vertical">
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#FFF">
+
+                <Space
+                    android:id="@+id/space_center"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:layout_centerHorizontal="true" />
+
+                <com.oddcn.screensharetobrowser.main.view.CustomModeView
+                    android:id="@+id/mode_view_wifi"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_toStartOf="@id/space_center"
+                    app:border_color="@color/colorAccent"
+                    app:content_text="@string/wifi_mode_desc"
+                    app:img_icon="@drawable/ic_wifi"
+                    app:open="@{vm.mode == 0}"
+                    app:title_text="WIFI模式" />
+
+                <com.oddcn.screensharetobrowser.main.view.CustomModeView
+                    android:id="@+id/mode_view_hotspot"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_toEndOf="@id/space_center"
+                    app:border_color="@color/colorAccent"
+                    app:content_text="@string/hotspot_mode_desc"
+                    app:img_icon="@drawable/ic_hotspot"
+                    app:open="@{vm.mode == 1}"
+                    app:title_text="热点模式" />
+            </RelativeLayout>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
