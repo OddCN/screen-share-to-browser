@@ -39,6 +39,10 @@ public class ServerService extends Service {
         serverServiceListener = listener;
     }
 
+    public void removeListener() {
+        serverServiceListener = null;
+    }
+
     public void makeForeground() {
         startForeground(
                 1,
@@ -78,13 +82,17 @@ public class ServerService extends Service {
             @Override
             public void onStarted() {
                 Log.d(TAG, "web server onStarted: ");
-                serverServiceListener.onServerStatusChanged(true);
+                if (serverServiceListener != null) {
+                    serverServiceListener.onServerStatusChanged(true);
+                }
             }
 
             @Override
             public void onStopped() {
                 Log.d(TAG, "web server onStopped: ");
-                serverServiceListener.onServerStatusChanged(false);
+                if (serverServiceListener != null) {
+                    serverServiceListener.onServerStatusChanged(false);
+                }
             }
 
             @Override
@@ -98,11 +106,15 @@ public class ServerService extends Service {
                         createWebServer();
                         Log.e(TAG, "onWebServerError: already change random port " + randomPort);
                         webServer.start();
-                        serverServiceListener.onWebServerError(WebServer.ERROR_TYPE_PORT_IN_USE);
+                        if (serverServiceListener != null) {
+                            serverServiceListener.onWebServerError(WebServer.ERROR_TYPE_PORT_IN_USE);
+                        }
                         return;
                     }
                 }
-                serverServiceListener.onWebServerError(WebServer.ERROR_TYPE_NORMAL);
+                if (serverServiceListener != null) {
+                    serverServiceListener.onWebServerError(WebServer.ERROR_TYPE_NORMAL);
+                }
             }
         });
     }
@@ -124,12 +136,16 @@ public class ServerService extends Service {
                     wsServer.start();
                     return;
                 }
-                serverServiceListener.onWsServerError(errorType);
+                if (serverServiceListener != null) {
+                    serverServiceListener.onWsServerError(errorType);
+                }
             }
 
             @Override
             public void onWsServerConnChanged(List<String> connList) {
-                serverServiceListener.onWsServerConnChanged(connList);
+                if (serverServiceListener != null) {
+                    serverServiceListener.onWsServerConnChanged(connList);
+                }
             }
         });
     }
@@ -159,9 +175,10 @@ public class ServerService extends Service {
     public void onDestroy() {
         stopServer();
         RxBus.getDefault().unRegister(compositeDisposable);
-        if (mAssetManager != null) {
-            mAssetManager.close();
-        }
+//        If close assetManager here, the app will crash when create this service immediately
+//        if (mAssetManager != null) {
+//            mAssetManager.close();
+//        }
         super.onDestroy();
     }
 

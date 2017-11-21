@@ -227,6 +227,8 @@ public class MainFragment extends Fragment {
 
     @Override
     public void onDestroy() {
+        serverService.removeListener();
+        recordService.removeListener();
         getActivity().unbindService(serverConnection);
         getActivity().unbindService(recorderConnection);
         if (broadcastReceiverNetworkState != null) {

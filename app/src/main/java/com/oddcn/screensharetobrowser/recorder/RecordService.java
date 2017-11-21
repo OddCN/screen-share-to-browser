@@ -59,6 +59,10 @@ public class RecordService extends Service {
         recordServiceListener = listener;
     }
 
+    public void removeListener() {
+        recordServiceListener = null;
+    }
+
     private class ScreenHandler extends Handler {
         public ScreenHandler(Looper looper) {
             super(looper);
@@ -133,7 +137,9 @@ public class RecordService extends Service {
         imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2);
         createVirtualDisplayForImageReader();
         running = true;
-        recordServiceListener.onRecorderStatusChanged(running);
+        if (recordServiceListener != null) {
+            recordServiceListener.onRecorderStatusChanged(running);
+        }
         return true;
     }
 
@@ -157,7 +163,9 @@ public class RecordService extends Service {
 
         if (imageReader != null)
             imageReader.close();
-        recordServiceListener.onRecorderStatusChanged(running);
+        if (recordServiceListener != null) {
+            recordServiceListener.onRecorderStatusChanged(running);
+        }
         return true;
     }
 
