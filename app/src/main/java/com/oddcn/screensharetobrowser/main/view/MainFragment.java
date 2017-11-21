@@ -18,6 +18,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -40,11 +41,12 @@ import com.oddcn.screensharetobrowser.utils.PermissionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.BIND_AUTO_CREATE;
 
-public class MainFragment extends Fragment{
+public class MainFragment extends Fragment {
     private static final String TAG = "MainFragment";
 
     private FragmentMainBinding binding;
@@ -172,7 +174,7 @@ public class MainFragment extends Fragment{
                         @Override
                         public void run() {
                             if (errorType == WebServer.ERROR_TYPE_PORT_IN_USE)
-                                Toast.makeText(serverService, "服务启动失败，端口已被占用，请更换端口", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(serverService, "因端口占用，已更换至可用端口", Toast.LENGTH_SHORT).show();
                         }
                     });
                 }
@@ -237,9 +239,19 @@ public class MainFragment extends Fragment{
         final IntentFilter filters = new IntentFilter();
         filters.addAction("android.net.wifi.WIFI_STATE_CHANGED");
         filters.addAction("android.net.wifi.STATE_CHANGE");
+        filters.addAction("android.net.wifi.WIFI_AP_STATE_CHANGED");
         broadcastReceiverNetworkState = new BroadcastReceiver() {
             @Override
             public void onReceive(Context context, Intent intent) {
+                Log.d(TAG, "onReceive: " + intent.getAction());
+                int state = intent.getIntExtra("wifi_state", -66);
+                Log.i(TAG, "state= " + state);
+                if ("android.net.wifi.WIFI_AP_STATE_CHANGED".equals(intent.getAction())
+                        && state == 13) {
+                    vm.mode.set(1);
+                } else {
+                    vm.mode.set(0);
+                }
                 vm.refreshIp();
             }
         };

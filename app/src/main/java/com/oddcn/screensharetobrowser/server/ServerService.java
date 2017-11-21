@@ -93,7 +93,11 @@ public class ServerService extends Service {
                 e.printStackTrace();
                 if (e.getMessage() != null) {
                     if (e.getMessage().contains("Address already in use")) {
-                        Log.e(TAG, "web server: 端口已被占用");
+                        int randomPort = NetUtil.getRandomPort();
+                        MainViewModel.webServerPort.set(randomPort);
+                        createWebServer();
+                        Log.e(TAG, "onWebServerError: already change random port " + randomPort);
+                        webServer.start();
                         serverServiceListener.onWebServerError(WebServer.ERROR_TYPE_PORT_IN_USE);
                         return;
                     }

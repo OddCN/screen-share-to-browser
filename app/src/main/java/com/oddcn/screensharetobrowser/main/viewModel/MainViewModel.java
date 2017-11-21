@@ -17,7 +17,7 @@ public class MainViewModel {
 
     private Context context;
 
-    public static ObservableInt mode = new ObservableInt();// 0 wifi , 1 hotspot
+    public ObservableInt mode = new ObservableInt();// 0 wifi , 1 hotspot
 
     public static ObservableField<String> localIpText = new ObservableField<>();
     public static ObservableInt webServerPort = new ObservableInt();
@@ -37,8 +37,34 @@ public class MainViewModel {
         serverConnCount.set(0);
     }
 
+    public View.OnClickListener onWifiModeViewClick() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mode.get() != 0) {
+                    Toast.makeText(context, "本机连接WIFI后，将自动切换为该模式", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+    }
+
+    public View.OnClickListener onHotspotModeViewClick() {
+        return new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (mode.get() != 1) {
+                    Toast.makeText(context, "本机开启热点后，将自动切换为该模式", Toast.LENGTH_SHORT).show();
+                }
+            }
+        };
+    }
+
     public void refreshIp() {
-        localIpText.set(NetUtil.getWifiIp(context));
+        if (mode.get() == 0) {
+            localIpText.set(NetUtil.getWifiIp(context));
+        } else if (mode.get() == 1) {
+            localIpText.set("192.168.43.1");
+        }
     }
 
     public View.OnClickListener onImgRefreshIpClick() {
@@ -47,21 +73,6 @@ public class MainViewModel {
             public void onClick(View v) {
                 refreshIp();
                 Toast.makeText(context, "已刷新本机IP", Toast.LENGTH_SHORT).show();
-            }
-        };
-    }
-
-    public View.OnClickListener onTextViewRandomChangeIpClick() {
-        return new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (isServerRunning.get()) {
-                    Toast.makeText(context, "服务运行中，不可更改", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-                int randomPort = NetUtil.getRandomPort();
-                webServerPort.set(randomPort);
-                refreshIp();
             }
         };
     }
