@@ -171,14 +171,11 @@ public class RecordService extends Service {
             public void onImageAvailable(ImageReader imageReader) {
                 try {
                     img = imageReader.acquireLatestImage();
-                    Log.d(TAG, "onImageAvailable: ");
                     if (img != null) {
                         Image.Plane[] planes = img.getPlanes();
-                        Log.d(TAG, "onImageAvailable: !=null");
                         if (planes[0].getBuffer() == null) {
                             return;
                         }
-                        Log.d(TAG, "onImageAvailable: buffer != null");
                         int width = img.getWidth();
                         int height = img.getHeight();
                         final ByteBuffer buffer = planes[0].getBuffer();
