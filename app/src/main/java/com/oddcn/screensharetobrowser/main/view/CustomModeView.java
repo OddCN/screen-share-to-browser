@@ -1,5 +1,7 @@
 package com.oddcn.screensharetobrowser.main.view;
 
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Color;
@@ -7,7 +9,9 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -18,7 +22,7 @@ import com.oddcn.screensharetobrowser.R;
  * Created by OddCN on 2017/11/21.
  */
 
-public class CustomModeView extends FrameLayout {
+public class CustomModeView extends FrameLayout implements View.OnTouchListener {
 
     private boolean open;
 
@@ -87,6 +91,8 @@ public class CustomModeView extends FrameLayout {
         } else {
             close();
         }
+
+        setOnTouchListener(this);
     }
 
     public void setOpen(boolean open) {
@@ -113,4 +119,36 @@ public class CustomModeView extends FrameLayout {
     private void initViewNull(Context context) {
         LayoutInflater.from(context).inflate(R.layout.custom_mode_view, this, true);
     }
+
+    @Override
+    public boolean onTouch(View view, MotionEvent event) {
+        switch (event.getAction()) {
+            case MotionEvent.ACTION_DOWN:
+                AnimatorSet upSet = new AnimatorSet();
+                upSet.playTogether(
+                        ObjectAnimator.ofFloat(view, "translationZ", 16),
+                        ObjectAnimator.ofFloat(view, "scaleX", 1.05f),
+                        ObjectAnimator.ofFloat(view, "scaleY", 1.05f)
+                );
+                upSet.setDuration(150);
+                upSet.setInterpolator(new DecelerateInterpolator());
+                upSet.start();
+                break;
+
+            case MotionEvent.ACTION_UP:
+            case MotionEvent.ACTION_CANCEL:
+                AnimatorSet downSet = new AnimatorSet();
+                downSet.playTogether(
+                        ObjectAnimator.ofFloat(view, "translationZ", 0),
+                        ObjectAnimator.ofFloat(view, "scaleX", 1f),
+                        ObjectAnimator.ofFloat(view, "scaleY", 1f)
+                );
+                downSet.setDuration(150);
+                downSet.setInterpolator(new DecelerateInterpolator());
+                downSet.start();
+                break;
+        }
+        return false;
+    }
+
 }

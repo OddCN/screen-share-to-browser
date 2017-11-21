@@ -2,6 +2,8 @@ package com.oddcn.screensharetobrowser.main.view;
 
 
 import android.Manifest;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -21,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,7 +44,7 @@ import java.util.List;
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.BIND_AUTO_CREATE;
 
-public class MainFragment extends Fragment {
+public class MainFragment extends Fragment{
     private static final String TAG = "MainFragment";
 
     private FragmentMainBinding binding;
@@ -73,11 +76,6 @@ public class MainFragment extends Fragment {
     }
 
     private void initView() {
-        binding.viewPagerModeDesc.setAdapter(new ModeDescAdapter());
-        binding.tabMode.setupWithViewPager(binding.viewPagerModeDesc);
-        binding.tabMode.getTabAt(0).setIcon(R.drawable.ic_wifi).setText("WiFi模式");
-        binding.tabMode.getTabAt(1).setIcon(R.drawable.ic_hotspot).setText("热点模式");
-
         vm = new MainViewModel(getContext());
         binding.setVm(vm);
 
@@ -128,12 +126,6 @@ public class MainFragment extends Fragment {
                         Manifest.permission.RECORD_AUDIO,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE
                 );
-            }
-        });
-        binding.viewPagerModeDesc.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                return true;
             }
         });
     }
@@ -241,33 +233,6 @@ public class MainFragment extends Fragment {
         super.onDestroy();
     }
 
-    private class ModeDescAdapter extends PagerAdapter {
-        @Override
-        public int getCount() {
-            return 2;
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == object;
-        }
-
-        @Override
-        public Object instantiateItem(ViewGroup container, int position) {
-            TextView textView = new TextView(container.getContext());
-            ViewGroup.LayoutParams layoutParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
-            textView.setLayoutParams(layoutParams);
-            textView.setGravity(Gravity.CENTER_VERTICAL);
-            if (position == 0) {
-                textView.setText(getText(R.string.wifi_mode_desc));
-            } else if (position == 1) {
-                textView.setText(getText(R.string.hotspot_mode_desc));
-            }
-            container.addView(textView);
-            return textView;
-        }
-    }
-
     private void initBroadcastReceiverNetworkStateChanged() {
         final IntentFilter filters = new IntentFilter();
         filters.addAction("android.net.wifi.WIFI_STATE_CHANGED");
@@ -280,4 +245,5 @@ public class MainFragment extends Fragment {
         };
         getActivity().registerReceiver(broadcastReceiverNetworkState, filters);
     }
+
 }

@@ -142,8 +142,12 @@ public class ServerService extends Service {
     }
 
     public void stopServer() {
-        webServer.stop();
-        wsServer.stopWithException();
+        if (webServer != null) {
+            webServer.stop();
+        }
+        if (wsServer != null) {
+            wsServer.stopWithException();
+        }
         stopForeground(true);
     }
 

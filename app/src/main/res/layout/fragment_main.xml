@@ -41,9 +41,11 @@
                     android:id="@+id/mode_view_wifi"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
                     android:layout_marginStart="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_toStartOf="@id/space_center"
+                    android:clickable="true"
                     app:border_color="@color/colorAccent"
                     app:content_text="@string/wifi_mode_desc"
                     app:img_icon="@drawable/ic_wifi"
@@ -54,37 +56,17 @@
                     android:id="@+id/mode_view_hotspot"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="16dp"
                     android:layout_marginEnd="16dp"
                     android:layout_marginTop="16dp"
                     android:layout_toEndOf="@id/space_center"
+                    android:clickable="true"
                     app:border_color="@color/colorAccent"
                     app:content_text="@string/hotspot_mode_desc"
                     app:img_icon="@drawable/ic_hotspot"
                     app:open="@{vm.mode == 1}"
                     app:title_text="热点模式" />
             </RelativeLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#FFF"
-                android:orientation="vertical"
-                android:paddingTop="16dp">
-
-                <android.support.design.widget.TabLayout
-                    android:id="@+id/tab_mode"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center_horizontal" />
-
-                <android.support.v4.view.ViewPager
-                    android:id="@+id/view_pager_mode_desc"
-                    android:layout_width="match_parent"
-                    android:layout_height="64dp"
-                    android:paddingEnd="16dp"
-                    android:paddingStart="16dp" />
-
-            </LinearLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
