@@ -22,14 +22,7 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
-import com.oddcn.screensharetobrowser.RxBus;
-import com.oddcn.screensharetobrowser.main.model.entity.RecorderStatusChangedEvent;
-import com.oddcn.screensharetobrowser.server.wsServer.MyWebSocketStreamWork;
-
-import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -46,12 +39,11 @@ public class RecordService extends Service {
     private int width;
     private int height;
     private int dpi;
-    FileOutputStream fos = null;
-    Bitmap bitmap = null;
-    Image img = null;
 
     private ScreenHandler screenHandler;
     private ExecutorService executorService;
+
+    private int counter = 0;
 
     private RecordServiceListener recordServiceListener;
 
@@ -178,14 +170,14 @@ public class RecordService extends Service {
             @Override
             public void onImageAvailable(ImageReader imageReader) {
                 try {
-                    img = imageReader.acquireLatestImage();
+                    Image img = imageReader.acquireLatestImage();
                     if (img != null) {
-                        Image.Plane[] planes = img.getPlanes();
-                        if (planes[0].getBuffer() == null) {
+                        if (img.getPlanes()[0].getBuffer() == null) {
                             return;
                         }
                         int width = img.getWidth();
                         int height = img.getHeight();
+                        Image.Plane[] planes = img.getPlanes();
                         final ByteBuffer buffer = planes[0].getBuffer();
                         int pixelStride = planes[0].getPixelStride();
                         int rowStride = planes[0].getRowStride();
@@ -194,33 +186,14 @@ public class RecordService extends Service {
                                 Bitmap.Config.ARGB_8888);
                         bitmap.copyPixelsFromBuffer(buffer);
                         bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
-                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                        int options_ = 10;
-                        bitmap.compress(Bitmap.CompressFormat.JPEG, options_, byteArrayOutputStream);
-
-                        MyWebSocketStreamWork myWebSocketStreamWork =
-                                new MyWebSocketStreamWork(byteArrayOutputStream);
-                        executorService.execute(myWebSocketStreamWork);
+                        img.close();
+                        BitmapStreamWork bitmapStreamWork = new BitmapStreamWork(bitmap);
+                        executorService.execute(bitmapStreamWork);
                         //new Thread(socketStreamWork).start();
                     }
 
                 } catch (Exception e) {
                     e.printStackTrace();
-                } finally {
-                    if (null != fos) {
-                        try {
-                            fos.close();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                    if (null != bitmap) {
-                        bitmap.recycle();
-                    }
-                    if (null != img) {
-                        img.close();
-                    }
-
                 }
             }
         }, screenHandler);

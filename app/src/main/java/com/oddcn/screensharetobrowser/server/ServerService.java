@@ -48,7 +48,6 @@ public class ServerService extends Service {
                 1,
                 Notifier.from(this)
                         .setTitle("屏幕分享服务")
-                        .setText("本机 " + NetUtil.getWifiIp(this) + ":" + MainViewModel.webServerPort.get())
                         .setActivityClass(MainActivity.class)
                         .build()
         );
@@ -84,6 +83,7 @@ public class ServerService extends Service {
                 Log.d(TAG, "web server onStarted: ");
                 if (serverServiceListener != null) {
                     serverServiceListener.onServerStatusChanged(true);
+                    makeForeground();
                 }
             }
 
