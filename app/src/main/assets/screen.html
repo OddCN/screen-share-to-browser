@@ -50,7 +50,6 @@
     }
 
     var ws;
-    var counter = 0;
 
     function runWebSocket(wsAddress) {
         if ("WebSocket" in window) {
@@ -65,7 +64,6 @@
             ws.onmessage = function (evt) {
                 console.log("onmessage");
                 image.src = 'data:image/jpg;base64,' + evt.data;
-                console.log(counter++)
             };
             ws.onclose = function () {
                 // websocket is closed.

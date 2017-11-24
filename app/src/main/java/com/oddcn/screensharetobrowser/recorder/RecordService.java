@@ -43,7 +43,7 @@ public class RecordService extends Service {
     private ScreenHandler screenHandler;
     private ExecutorService executorService;
 
-    private int counter = 0;
+    private Image img;
 
     private RecordServiceListener recordServiceListener;
 
@@ -170,7 +170,7 @@ public class RecordService extends Service {
             @Override
             public void onImageAvailable(ImageReader imageReader) {
                 try {
-                    Image img = imageReader.acquireLatestImage();
+                    img = imageReader.acquireLatestImage();
                     if (img != null) {
                         if (img.getPlanes()[0].getBuffer() == null) {
                             return;
@@ -186,14 +186,19 @@ public class RecordService extends Service {
                                 Bitmap.Config.ARGB_8888);
                         bitmap.copyPixelsFromBuffer(buffer);
                         bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
-                        img.close();
+
                         BitmapStreamWork bitmapStreamWork = new BitmapStreamWork(bitmap);
-                        executorService.execute(bitmapStreamWork);
+                        if (executorService != null) {
+                            executorService.execute(bitmapStreamWork);
+                        }
                         //new Thread(socketStreamWork).start();
                     }
-
                 } catch (Exception e) {
                     e.printStackTrace();
+                } finally {
+                    if (img != null) {
+                        img.close();
+                    }
                 }
             }
         }, screenHandler);

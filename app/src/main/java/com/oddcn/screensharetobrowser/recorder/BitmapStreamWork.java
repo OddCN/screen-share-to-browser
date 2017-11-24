@@ -37,6 +37,8 @@ public class BitmapStreamWork implements Runnable {
             byteArrayOutputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            bitmap.recycle();
         }
     }
 }

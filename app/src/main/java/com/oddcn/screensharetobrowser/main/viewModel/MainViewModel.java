@@ -23,7 +23,7 @@ public class MainViewModel {
     public static ObservableInt webServerPort = new ObservableInt();
     public static ObservableInt wsServerPort = new ObservableInt();
 
-    public ObservableBoolean isServerRunning = new ObservableBoolean();
+    public static ObservableBoolean isServerRunning = new ObservableBoolean();
 
     public ObservableInt serverConnCount = new ObservableInt();
 

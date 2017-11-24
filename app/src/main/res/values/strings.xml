@@ -11,7 +11,9 @@
     <string name="start_record">开始录屏</string>
     <string name="stop_record">停止录屏</string>
 
-
     <string name="permission_request_denied">需要相应的权限</string>
+
+    <string name="warning">Warning</string>
+    <string name="dialog_exit_message">Service is currently running. If you exit the application we will stop it. Are sure you want to exit the application?</string>
 
 </resources>
