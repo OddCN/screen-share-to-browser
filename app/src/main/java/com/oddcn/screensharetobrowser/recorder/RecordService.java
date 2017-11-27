@@ -22,10 +22,25 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
 
+import com.oddcn.screensharetobrowser.RxBus;
+
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.ObservableSource;
+import io.reactivex.Observer;
+import io.reactivex.disposables.CompositeDisposable;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.functions.Consumer;
+import io.reactivex.functions.Function;
+import io.reactivex.schedulers.Schedulers;
 
 
 public class RecordService extends Service {
@@ -41,7 +56,6 @@ public class RecordService extends Service {
     private int dpi;
 
     private ScreenHandler screenHandler;
-    private ExecutorService executorService;
 
     private Image img;
 
@@ -85,7 +99,6 @@ public class RecordService extends Service {
         running = false;
         mediaRecorder = new MediaRecorder();
 
-        executorService = Executors.newCachedThreadPool();
         HandlerThread handlerThread = new HandlerThread("Screen Record");
         handlerThread.start();
         screenHandler = new ScreenHandler(handlerThread.getLooper());
@@ -98,13 +111,30 @@ public class RecordService extends Service {
         //height = 2300;
         Log.i(TAG, "onCreate: w is " + width + " h is " + height);
         imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2);
+
+        Disposable disposable =
+                getByteBufferObservable()
+                        .subscribeOn(Schedulers.io())
+                        .map(new Function<ImageInfo, Bitmap>() {
+                            @Override
+                            public Bitmap apply(ImageInfo imageInfo) throws Exception {
+                                Bitmap bitmap = Bitmap.createBitmap(imageInfo.width + imageInfo.rowPadding / imageInfo.pixelStride, imageInfo.height,
+                                        Bitmap.Config.ARGB_8888);
+
+                                bitmap.copyPixelsFromBuffer(imageInfo.byteBuffer);
+                                bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
+                                return bitmap;
+                            }
+                        })
+                        .subscribe(getBitmapConsumer());
+        compositeDisposable.add(disposable);
     }
 
     @Override
     public void onDestroy() {
-
         super.onDestroy();
         stopRecord();
+        compositeDisposable.dispose();
     }
 
     public void setMediaProject(MediaProjection project) {
@@ -125,7 +155,6 @@ public class RecordService extends Service {
         if (mediaProjection == null || running) {
             return false;
         }
-        executorService = Executors.newCachedThreadPool();
         imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2);
         createVirtualDisplayForImageReader();
         running = true;
@@ -140,10 +169,6 @@ public class RecordService extends Service {
             return false;
         }
         running = false;
-        if (executorService != null && !executorService.isShutdown()) {
-            executorService.shutdown();
-            executorService = null;
-        }
         if (virtualDisplay != null) {
             virtualDisplay.release();
             virtualDisplay = null;
@@ -178,54 +203,81 @@ public class RecordService extends Service {
                         int width = img.getWidth();
                         int height = img.getHeight();
                         Image.Plane[] planes = img.getPlanes();
-                        final ByteBuffer buffer = planes[0].getBuffer();
+
+                        ByteBuffer buffer = planes[0].getBuffer();
                         int pixelStride = planes[0].getPixelStride();
                         int rowStride = planes[0].getRowStride();
                         int rowPadding = rowStride - pixelStride * width;
-                        Bitmap bitmap = Bitmap.createBitmap(width + rowPadding / pixelStride, height,
-                                Bitmap.Config.ARGB_8888);
-                        bitmap.copyPixelsFromBuffer(buffer);
-                        bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
-
-                        BitmapStreamWork bitmapStreamWork = new BitmapStreamWork(bitmap);
-                        if (executorService != null) {
-                            executorService.execute(bitmapStreamWork);
+                        if (img != null) {
+                            img.close();
                         }
-                        //new Thread(socketStreamWork).start();
+                        ImageInfo imageInfo = new ImageInfo(width, height, buffer, pixelStride, rowPadding);
+
+                        imageInfoObservableEmitter.onNext(imageInfo);
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                } finally {
-                    if (img != null) {
-                        img.close();
-                    }
                 }
             }
         }, screenHandler);
     }
 
-    public String getsaveDirectory() {
-        if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
-            String rootDir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/" + "ScreenRecord" + "/";
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
-            File file = new File(rootDir);
-            if (!file.exists()) {
-                if (!file.mkdirs()) {
-                    return null;
+    private ObservableEmitter<ImageInfo> imageInfoObservableEmitter;
+
+    private Observable<ImageInfo> getByteBufferObservable() {
+        return Observable.create(new ObservableOnSubscribe<ImageInfo>() {
+            @Override
+            public void subscribe(ObservableEmitter<ImageInfo> e) throws Exception {
+                imageInfoObservableEmitter = e;
+            }
+        });
+    }
+
+    private Consumer<Bitmap> getBitmapConsumer() {
+        return new Consumer<Bitmap>() {
+            @Override
+            public void accept(Bitmap bitmap) throws Exception {
+                ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                bitmap.compress(Bitmap.CompressFormat.JPEG, 10, byteArrayOutputStream);
+
+                byte[] b = byteArrayOutputStream.toByteArray();
+                String base64Str = org.java_websocket.util.Base64.encodeBytes(b);
+
+                RxBus.getDefault().post(base64Str);
+
+                try {
+                    byteArrayOutputStream.flush();
+                    byteArrayOutputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    bitmap.recycle();
                 }
             }
-
-            Toast.makeText(getApplicationContext(), rootDir, Toast.LENGTH_SHORT).show();
-
-            return rootDir;
-        } else {
-            return null;
-        }
+        };
     }
 
     public class RecordBinder extends Binder {
         public RecordService getRecordService() {
             return RecordService.this;
+        }
+    }
+
+    private class ImageInfo {
+        int width;
+        int height;
+        ByteBuffer byteBuffer;
+        int pixelStride;
+        int rowPadding;
+
+        public ImageInfo(int width, int height, ByteBuffer byteBuffer, int pixelStride, int rowPadding) {
+            this.width = width;
+            this.height = height;
+            this.byteBuffer = byteBuffer;
+            this.pixelStride = pixelStride;
+            this.rowPadding = rowPadding;
         }
     }
 }

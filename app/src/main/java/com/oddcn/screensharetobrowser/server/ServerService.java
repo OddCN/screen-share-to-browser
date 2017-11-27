@@ -65,12 +65,17 @@ public class ServerService extends Service {
     public void onCreate() {
         super.onCreate();
 
-        Disposable disposable = RxBus.getDefault().register(String.class, new Consumer() {
-            @Override
-            public void accept(Object o) throws Exception {
-                wsServer.broadcast((String) o);
-            }
-        }, Schedulers.io());
+        Disposable disposable =
+                RxBus.getDefault()
+                        .toObservable(String.class)
+                        .subscribeOn(Schedulers.io())
+                        .doOnNext(new Consumer<String>() {
+                            @Override
+                            public void accept(String s) throws Exception {
+                                wsServer.broadcast(s);
+                            }
+                        })
+                        .subscribe();
         compositeDisposable.add(disposable);
 
         mAssetManager = getAssets();
@@ -174,11 +179,7 @@ public class ServerService extends Service {
     @Override
     public void onDestroy() {
         stopServer();
-        RxBus.getDefault().unRegister(compositeDisposable);
-//        If close assetManager here, the app will crash when create this service immediately
-//        if (mAssetManager != null) {
-//            mAssetManager.close();
-//        }
+        compositeDisposable.dispose();
         super.onDestroy();
     }
 
