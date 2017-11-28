@@ -11,12 +11,16 @@
 <header id="header" style="padding: 0 0 0 0">
     <img id="image">
 </header>
+<ul id="list">
+
+</ul>
 </body>
 
 <script>
     'use strict';
 
     var image = document.getElementById('image');
+    var list = document.getElementById('list');
 
     loadXMLDoc("/wsinfo");
 
@@ -50,6 +54,7 @@
     }
 
     var ws;
+    var counter = 0;
 
     function runWebSocket(wsAddress) {
         if ("WebSocket" in window) {
@@ -62,8 +67,14 @@
                 console.log("Message is sent...");
             };
             ws.onmessage = function (evt) {
-                console.log("onmessage");
-                image.src = 'data:image/jpg;base64,' + evt.data;
+                image.setAttribute("src", "data:image/jpg;base64," + evt.data);
+                var a = document.createElement('a');
+                a.innerHTML = '' + counter++;
+                a.style.margin= "3px";
+                a.onclick=function () {
+                    image.setAttribute("src", "data:image/jpg;base64," + evt.data);
+                };
+                list.appendChild(a);
             };
             ws.onclose = function () {
                 // websocket is closed.

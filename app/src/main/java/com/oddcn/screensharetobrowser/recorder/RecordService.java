@@ -18,6 +18,7 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Process;
 import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Toast;
@@ -36,6 +37,7 @@ import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
 import io.reactivex.ObservableSource;
 import io.reactivex.Observer;
+import io.reactivex.Scheduler;
 import io.reactivex.disposables.CompositeDisposable;
 import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
@@ -56,6 +58,9 @@ public class RecordService extends Service {
     private int dpi;
 
     private ScreenHandler screenHandler;
+    private int threadCount;
+    private ExecutorService executorService;
+    private Scheduler scheduler;
 
     private Image img;
 
@@ -99,6 +104,10 @@ public class RecordService extends Service {
         running = false;
         mediaRecorder = new MediaRecorder();
 
+        threadCount = Runtime.getRuntime().availableProcessors();
+        Log.d(TAG, "onCreate: threadCount" + threadCount);
+        executorService = Executors.newFixedThreadPool(threadCount);
+
         HandlerThread handlerThread = new HandlerThread("Screen Record");
         handlerThread.start();
         screenHandler = new ScreenHandler(handlerThread.getLooper());
@@ -112,20 +121,12 @@ public class RecordService extends Service {
         Log.i(TAG, "onCreate: w is " + width + " h is " + height);
         imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2);
 
+        scheduler = Schedulers.from(executorService);
         Disposable disposable =
                 getByteBufferObservable()
                         .subscribeOn(Schedulers.io())
-                        .map(new Function<ImageInfo, Bitmap>() {
-                            @Override
-                            public Bitmap apply(ImageInfo imageInfo) throws Exception {
-                                Bitmap bitmap = Bitmap.createBitmap(imageInfo.width + imageInfo.rowPadding / imageInfo.pixelStride, imageInfo.height,
-                                        Bitmap.Config.ARGB_8888);
-
-                                bitmap.copyPixelsFromBuffer(imageInfo.byteBuffer);
-                                bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
-                                return bitmap;
-                            }
-                        })
+                        .observeOn(scheduler)
+                        .map(getBitmapFunction())
                         .subscribe(getBitmapConsumer());
         compositeDisposable.add(disposable);
     }
@@ -155,6 +156,7 @@ public class RecordService extends Service {
         if (mediaProjection == null || running) {
             return false;
         }
+        executorService = Executors.newFixedThreadPool(threadCount);
         imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2);
         createVirtualDisplayForImageReader();
         running = true;
@@ -177,7 +179,10 @@ public class RecordService extends Service {
             mediaProjection.stop();
             mediaProjection = null;
         }
-
+        if (executorService != null && !executorService.isShutdown()) {
+            executorService.shutdown();
+            executorService = null;
+        }
         if (imageReader != null)
             imageReader.close();
         if (recordServiceListener != null) {
@@ -200,6 +205,7 @@ public class RecordService extends Service {
                         if (img.getPlanes()[0].getBuffer() == null) {
                             return;
                         }
+                        Log.d(TAG, "onImageAvailable: ");
                         int width = img.getWidth();
                         int height = img.getHeight();
                         Image.Plane[] planes = img.getPlanes();
@@ -213,10 +219,20 @@ public class RecordService extends Service {
                         }
                         ImageInfo imageInfo = new ImageInfo(width, height, buffer, pixelStride, rowPadding);
 
-                        imageInfoObservableEmitter.onNext(imageInfo);
+//                        imageInfoObservableEmitter.onNext(imageInfo);
+                        Observable.just(imageInfo)
+                                .subscribeOn(scheduler)
+                                .observeOn(scheduler)
+                                .map(getBitmapFunction())
+                                .subscribe(getBitmapConsumer());
+
+                        Log.d(TAG, "onNext: " + Thread.currentThread().getName());
+                        Log.d(TAG, "onNext: " + Process.myTid());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                } finally {
+                    Log.d(TAG, "onImageAvailable: finally");
                 }
             }
         }, screenHandler);
@@ -231,14 +247,32 @@ public class RecordService extends Service {
             @Override
             public void subscribe(ObservableEmitter<ImageInfo> e) throws Exception {
                 imageInfoObservableEmitter = e;
+                Log.d(TAG, "subscribe: " + Process.myTid());
             }
         });
+    }
+
+    private Function<ImageInfo, Bitmap> getBitmapFunction() {
+        return new Function<ImageInfo, Bitmap>() {
+            @Override
+            public Bitmap apply(ImageInfo imageInfo) throws Exception {
+                Log.d(TAG, "apply: " + Thread.currentThread().getName());
+                Bitmap bitmap = Bitmap.createBitmap(imageInfo.width + imageInfo.rowPadding / imageInfo.pixelStride, imageInfo.height,
+                        Bitmap.Config.ARGB_8888);
+                bitmap.copyPixelsFromBuffer(imageInfo.byteBuffer);
+                bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
+
+                Log.d(TAG, "apply: --- " + Process.myTid());
+                return bitmap;
+            }
+        };
     }
 
     private Consumer<Bitmap> getBitmapConsumer() {
         return new Consumer<Bitmap>() {
             @Override
             public void accept(Bitmap bitmap) throws Exception {
+                Log.d(TAG, "accept: " + Thread.currentThread().getName());
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 10, byteArrayOutputStream);
 
@@ -255,6 +289,7 @@ public class RecordService extends Service {
                 } finally {
                     bitmap.recycle();
                 }
+                Log.d(TAG, "accept: --- " + Process.myTid());
             }
         };
     }
