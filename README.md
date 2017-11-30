@@ -6,4 +6,4 @@ Android screen share to pc browser over WiFi, with WebSocket.
 - rxjava2
 - rxbus
 # TODO
-Continue to improve html5 page including screen-player.
+Try to stream h264 to browser by websocket.

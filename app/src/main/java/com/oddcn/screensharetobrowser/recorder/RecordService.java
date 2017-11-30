@@ -62,8 +62,6 @@ public class RecordService extends Service {
     private ExecutorService executorService;
     private Scheduler scheduler;
 
-    private Image img;
-
     private RecordServiceListener recordServiceListener;
 
     public void setListener(RecordServiceListener listener) {
@@ -200,11 +198,8 @@ public class RecordService extends Service {
             @Override
             public void onImageAvailable(ImageReader imageReader) {
                 try {
-                    img = imageReader.acquireLatestImage();
+                    Image img = imageReader.acquireLatestImage();
                     if (img != null) {
-                        if (img.getPlanes()[0].getBuffer() == null) {
-                            return;
-                        }
                         Log.d(TAG, "onImageAvailable: ");
                         int width = img.getWidth();
                         int height = img.getHeight();
@@ -214,25 +209,20 @@ public class RecordService extends Service {
                         int pixelStride = planes[0].getPixelStride();
                         int rowStride = planes[0].getRowStride();
                         int rowPadding = rowStride - pixelStride * width;
-                        if (img != null) {
-                            img.close();
-                        }
+                        img.close();
+
                         ImageInfo imageInfo = new ImageInfo(width, height, buffer, pixelStride, rowPadding);
 
-//                        imageInfoObservableEmitter.onNext(imageInfo);
                         Observable.just(imageInfo)
                                 .subscribeOn(scheduler)
                                 .observeOn(scheduler)
                                 .map(getBitmapFunction())
                                 .subscribe(getBitmapConsumer());
 
-                        Log.d(TAG, "onNext: " + Thread.currentThread().getName());
-                        Log.d(TAG, "onNext: " + Process.myTid());
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
-                    Log.d(TAG, "onImageAvailable: finally");
                 }
             }
         }, screenHandler);
@@ -256,13 +246,11 @@ public class RecordService extends Service {
         return new Function<ImageInfo, Bitmap>() {
             @Override
             public Bitmap apply(ImageInfo imageInfo) throws Exception {
-                Log.d(TAG, "apply: " + Thread.currentThread().getName());
                 Bitmap bitmap = Bitmap.createBitmap(imageInfo.width + imageInfo.rowPadding / imageInfo.pixelStride, imageInfo.height,
                         Bitmap.Config.ARGB_8888);
                 bitmap.copyPixelsFromBuffer(imageInfo.byteBuffer);
                 bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
 
-                Log.d(TAG, "apply: --- " + Process.myTid());
                 return bitmap;
             }
         };
@@ -272,7 +260,6 @@ public class RecordService extends Service {
         return new Consumer<Bitmap>() {
             @Override
             public void accept(Bitmap bitmap) throws Exception {
-                Log.d(TAG, "accept: " + Thread.currentThread().getName());
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 10, byteArrayOutputStream);
 
@@ -289,7 +276,6 @@ public class RecordService extends Service {
                 } finally {
                     bitmap.recycle();
                 }
-                Log.d(TAG, "accept: --- " + Process.myTid());
             }
         };
     }
