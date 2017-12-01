@@ -9,3 +9,4 @@ Android screen share to pc browser over WiFi, with WebSocket.
 Try to stream h264 to browser by websocket.
 # Amazing
 https://eclipsesource.com/blogs/2016/07/20/running-node-js-on-the-jvm/
+https://github.com/WritingMinds/ffmpeg-android-java
