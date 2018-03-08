@@ -14,19 +14,19 @@ Android screen share to pc browser over WiFi, with WebSocket.
 
 ## App
 
-![app1](/pictures/app_1.png)
+<img src="/pictures/app_1.png" height = "800" alt="app1"/>
 
-![app2](/pictures/app_2.png)
+<img src="/pictures/app_2.png" height = "800" alt="app2"/>
 
 ## Sharing
 
 ![pc1](/pictures/pc_1.png)
 
-![phone1](/pictures/phone_1.png)
+<img src="/pictures/phone_1.png" height = "800" alt="phone1"/>
 
 ![pc2](/pictures/pc_2.png)
 
-![phone2](/pictures/phone_2.png)
+<img src="/pictures/phone_2.png" height = "800" alt="phone2"/>
 
 ![pc_screen](/pictures/pc_screen.gif)
 
