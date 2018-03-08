@@ -2,7 +2,6 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://C:\A_my_git\screen-share-to-browser\ScreenShareToBrowser.iml" filepath="C:\A_my_git\screen-share-to-browser\ScreenShareToBrowser.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
       <module fileurl="file://$PROJECT_DIR$/screen-share-to-browser.iml" filepath="$PROJECT_DIR$/screen-share-to-browser.iml" />
     </modules>

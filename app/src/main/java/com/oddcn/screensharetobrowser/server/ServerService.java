@@ -11,6 +11,7 @@ import android.util.Log;
 import com.oddcn.screensharetobrowser.RxBus;
 import com.oddcn.screensharetobrowser.main.view.MainActivity;
 import com.oddcn.screensharetobrowser.main.viewModel.MainViewModel;
+import com.oddcn.screensharetobrowser.server.transcodeServer.Transcoder;
 import com.oddcn.screensharetobrowser.server.webServer.WebServer;
 import com.oddcn.screensharetobrowser.server.wsServer.WsServer;
 import com.oddcn.screensharetobrowser.server.wsServer.WsServerListener;
@@ -164,6 +165,7 @@ public class ServerService extends Service {
         webServer.start();
         createWsServer();
         wsServer.start();
+        Transcoder transcoder = new Transcoder();
     }
 
     public void stopServer() {
