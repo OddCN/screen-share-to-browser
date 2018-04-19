@@ -34,6 +34,14 @@ import io.reactivex.schedulers.Schedulers;
 public class ServerService extends Service {
     private static final String TAG = "ServerService";
 
+    private WsServer wsServer;
+
+    private Server webServer;
+
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+    private AssetManager mAssetManager;
+
     private ServerServiceListener serverServiceListener;
 
     public void setListener(ServerServiceListener listener) {
@@ -43,14 +51,6 @@ public class ServerService extends Service {
     public void removeListener() {
         serverServiceListener = null;
     }
-
-    private WsServer wsServer;
-
-    private Server webServer;
-
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
-
-    private AssetManager mAssetManager;
 
     public void makeForeground() {
         startForeground(
