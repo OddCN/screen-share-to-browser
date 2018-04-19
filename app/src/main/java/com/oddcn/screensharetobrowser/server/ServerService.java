@@ -44,6 +44,14 @@ public class ServerService extends Service {
         serverServiceListener = null;
     }
 
+    private WsServer wsServer;
+
+    private Server webServer;
+
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
+
+    private AssetManager mAssetManager;
+
     public void makeForeground() {
         startForeground(
                 1,
@@ -53,14 +61,6 @@ public class ServerService extends Service {
                         .build()
         );
     }
-
-    private WsServer wsServer;
-
-    private Server webServer;
-
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
-
-    private AssetManager mAssetManager;
 
     @Override
     public void onCreate() {
