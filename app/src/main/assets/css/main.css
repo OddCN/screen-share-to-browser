@@ -80,14 +80,14 @@
 	}
 
 		body.is-loading *, body.is-loading *:before, body.is-loading *:after {
-			-moz-animation: none !important;
-			-webkit-animation: none !important;
-			-ms-animation: none !important;
-			animation: none !important;
-			-moz-transition: none !important;
-			-webkit-transition: none !important;
-			-ms-transition: none !important;
-			transition: none !important;
+			-moz-animation: none ;
+			-webkit-animation: none ;
+			-ms-animation: none ;
+			animation: none ;
+			-moz-transition: none ;
+			-webkit-transition: none ;
+			-ms-transition: none ;
+			transition: none ;
 		}
 
 /* Type */
@@ -141,7 +141,7 @@
 	}
 
 		a:hover {
-			border-bottom-color: transparent !important;
+			border-bottom-color: transparent ;
 		}
 
 	strong, b {
@@ -424,7 +424,7 @@
 	button,
 	.button {
 		background-color: transparent;
-		color: #828282 !important;
+		color: #828282 ;
 		box-shadow: inset 0 0 0 2px #e6e6e6;
 	}
 
@@ -451,7 +451,7 @@
 		.button.special {
 			box-shadow: none;
 			background-color: #4696e5;
-			color: #ffffff !important;
+			color: #ffffff ;
 		}
 
 			input[type="submit"].special:hover,
@@ -635,7 +635,7 @@ ul.icons li {
 }
 
 ul.icons li:last-child {
-	padding-right: 0 !important;
+	padding-right: 0 ;
 }
 
 ul.icons li .icon:before {
@@ -800,7 +800,7 @@ ul.actions.fit.small li {
 
 	ul.actions li > * {
 		width: 100%;
-		margin: 0 !important;
+		margin: 0 ;
 	}
 
 	ul.actions li > *.icon:before {
@@ -931,7 +931,7 @@ ul.alt > li {
 		#header button,
 		#header .button {
 			background-color: transparent;
-			color: #ffffff !important;
+			color: #ffffff ;
 			box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.25);
 		}
 
@@ -958,7 +958,7 @@ ul.alt > li {
 			#header .button.special {
 				box-shadow: none;
 				background-color: #ffffff;
-				color: #4696e5 !important;
+				color: #4696e5 ;
 			}
 
 		#header label {
@@ -1013,23 +1013,23 @@ ul.alt > li {
 		}
 
 		#header ::-webkit-input-placeholder {
-			color: #b5d5f4 !important;
+			color: #b5d5f4 ;
 		}
 
 		#header :-moz-placeholder {
-			color: #b5d5f4 !important;
+			color: #b5d5f4 ;
 		}
 
 		#header ::-moz-placeholder {
-			color: #b5d5f4 !important;
+			color: #b5d5f4 ;
 		}
 
 		#header :-ms-input-placeholder {
-			color: #b5d5f4 !important;
+			color: #b5d5f4 ;
 		}
 
 		#header .formerize-placeholder {
-			color: #b5d5f4 !important;
+			color: #b5d5f4 ;
 		}
 
 		#header .icon {

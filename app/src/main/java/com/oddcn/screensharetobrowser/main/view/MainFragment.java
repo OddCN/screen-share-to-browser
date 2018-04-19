@@ -54,9 +54,6 @@ public class MainFragment extends Fragment {
 
     private BroadcastReceiver broadcastReceiverNetworkState;
 
-    public MainFragment() {
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
