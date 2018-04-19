@@ -12,7 +12,6 @@ import android.media.ImageReader;
 import android.media.MediaRecorder;
 import android.media.projection.MediaProjection;
 import android.os.Binder;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
@@ -21,12 +20,10 @@ import android.os.Message;
 import android.os.Process;
 import android.util.Log;
 import android.view.WindowManager;
-import android.widget.Toast;
 
 import com.oddcn.screensharetobrowser.RxBus;
 
 import java.io.ByteArrayOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.util.concurrent.ExecutorService;
@@ -35,11 +32,8 @@ import java.util.concurrent.Executors;
 import io.reactivex.Observable;
 import io.reactivex.ObservableEmitter;
 import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.ObservableSource;
-import io.reactivex.Observer;
 import io.reactivex.Scheduler;
 import io.reactivex.disposables.CompositeDisposable;
-import io.reactivex.disposables.Disposable;
 import io.reactivex.functions.Consumer;
 import io.reactivex.functions.Function;
 import io.reactivex.schedulers.Schedulers;
@@ -61,6 +55,9 @@ public class RecordService extends Service {
     private int threadCount;
     private ExecutorService executorService;
     private Scheduler scheduler;
+
+    private long imgFlag = 0;
+    private long postedImgFlag = 0;
 
     private RecordServiceListener recordServiceListener;
 
@@ -120,13 +117,13 @@ public class RecordService extends Service {
         imageReader = ImageReader.newInstance(width, height, PixelFormat.RGBA_8888, 2);
 
         scheduler = Schedulers.from(executorService);
-        Disposable disposable =
-                getByteBufferObservable()
-                        .subscribeOn(Schedulers.io())
-                        .observeOn(scheduler)
-                        .map(getBitmapFunction())
-                        .subscribe(getBitmapConsumer());
-        compositeDisposable.add(disposable);
+//        Disposable disposable =
+//                getByteBufferObservable()
+//                        .subscribeOn(Schedulers.io())
+//                        .observeOn(scheduler)
+//                        .map(getBitmapFunction())
+//                        .subscribe(getBitmapConsumer());
+//        compositeDisposable.add(disposable);
     }
 
     @Override
@@ -213,7 +210,7 @@ public class RecordService extends Service {
 
                         ImageInfo imageInfo = new ImageInfo(width, height, buffer, pixelStride, rowPadding);
 
-                        Observable.just(imageInfo)
+                        Observable.just(new FlagImageInfo(imageInfo, imgFlag++))
                                 .subscribeOn(scheduler)
                                 .observeOn(scheduler)
                                 .map(getBitmapFunction())
@@ -242,31 +239,38 @@ public class RecordService extends Service {
         });
     }
 
-    private Function<ImageInfo, Bitmap> getBitmapFunction() {
-        return new Function<ImageInfo, Bitmap>() {
+    private Function<FlagImageInfo, FlagBitmap> getBitmapFunction() {
+        return new Function<FlagImageInfo, FlagBitmap>() {
             @Override
-            public Bitmap apply(ImageInfo imageInfo) throws Exception {
+            public FlagBitmap apply(FlagImageInfo flagImageInfo) throws Exception {
+                ImageInfo imageInfo = flagImageInfo.imageInfo;
                 Bitmap bitmap = Bitmap.createBitmap(imageInfo.width + imageInfo.rowPadding / imageInfo.pixelStride, imageInfo.height,
                         Bitmap.Config.ARGB_8888);
                 bitmap.copyPixelsFromBuffer(imageInfo.byteBuffer);
                 bitmap = Bitmap.createBitmap(bitmap, 0, 0, width, height);
 
-                return bitmap;
+                return new FlagBitmap(bitmap, flagImageInfo.flag);
             }
         };
     }
 
-    private Consumer<Bitmap> getBitmapConsumer() {
-        return new Consumer<Bitmap>() {
+    private Consumer<FlagBitmap> getBitmapConsumer() {
+        return new Consumer<FlagBitmap>() {
             @Override
-            public void accept(Bitmap bitmap) throws Exception {
+            public void accept(FlagBitmap flagBitmap) throws Exception {
+                Bitmap bitmap = flagBitmap.bitmap;
                 ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.JPEG, 10, byteArrayOutputStream);
 
                 byte[] b = byteArrayOutputStream.toByteArray();
                 String base64Str = org.java_websocket.util.Base64.encodeBytes(b);
 
-                RxBus.getDefault().post(base64Str);
+                if (flagBitmap.flag > postedImgFlag) {
+                    postedImgFlag = flagBitmap.flag;
+                    RxBus.getDefault().post(base64Str);
+                } else {
+                    Log.d(TAG, "deprecated " + flagBitmap.flag);
+                }
 
                 try {
                     byteArrayOutputStream.flush();
@@ -299,6 +303,26 @@ public class RecordService extends Service {
             this.byteBuffer = byteBuffer;
             this.pixelStride = pixelStride;
             this.rowPadding = rowPadding;
+        }
+    }
+
+    private class FlagImageInfo {
+        ImageInfo imageInfo;
+        long flag;
+
+        public FlagImageInfo(ImageInfo imageInfo, long flag) {
+            this.imageInfo = imageInfo;
+            this.flag = flag;
+        }
+    }
+
+    private class FlagBitmap {
+        Bitmap bitmap;
+        long flag;
+
+        public FlagBitmap(Bitmap bitmap, long flag) {
+            this.bitmap = bitmap;
+            this.flag = flag;
         }
     }
 }
