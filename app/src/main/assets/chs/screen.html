@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>屏幕分享</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <link rel="stylesheet" href="css/main.css"/>
+    <link rel="shortcut icon" href="favicon.ico" type="image/vnd.microsoft.icon" />
+</head>
+<body>
+<header id="header" style="padding: 0 0 0 0">
+    <img id="image">
+</header>
+<!--<ul id="list">-->
+<!--</ul>-->
+</body>
+
+<script>
+    'use strict';
+
+    var image = document.getElementById('image');
+    //var list = document.getElementById('list');
+
+    loadXMLDoc("/wsinfo");
+
+    var xhr;
+
+    function loadXMLDoc(url) {
+        xhr = null;
+        if (window.XMLHttpRequest) {// code for all new browsers
+            xhr = new XMLHttpRequest();
+        }
+        if (xhr !== null) {
+            xhr.onreadystatechange = state_Change;
+            xhr.open("GET", url, true);
+            xhr.send(null);
+        }
+        else {
+            alert("Your browser does not support XMLHTTP.");
+        }
+    }
+
+    function state_Change() {
+        if (xhr.readyState === 4) {// 4 = "loaded"
+            if (xhr.status === 200) {// 200 = OK
+                console.log(xhr.responseText);
+                runWebSocket(xhr.responseText);
+            }
+            else {
+                alert("Problem retrieving XML data");
+            }
+        }
+    }
+
+    var ws;
+    var counter = 0;
+
+    function runWebSocket(wsAddress) {
+        if ("WebSocket" in window) {
+            console.log("WebSocket is supported by your Browser!");
+            // Let us open a web socket
+            ws = new WebSocket("ws://" + wsAddress);
+            ws.onopen = function () {
+                // Web Socket is connected, send data using send()
+                ws.send("Message to send\n");
+                console.log("Message is sent...");
+            };
+            ws.onmessage = function (evt) {
+                image.setAttribute("src", "data:image/jpg;base64," + evt.data);
+                //var a = document.createElement('a');
+                //a.innerHTML = '' + counter++;
+                //a.style.margin= "3px";
+                //a.onclick=function () {
+                //    image.setAttribute("src", "data:image/jpg;base64," + evt.data);
+                //};
+                //list.appendChild(a);
+            };
+            ws.onclose = function () {
+                // websocket is closed.
+                console.log("Connection is closed...");
+                alert("Connection is closed...");
+            };
+        }
+        else {
+            // The browser doesn't support WebSocket
+            alert("WebSocket NOT supported by your Browser!");
+        }
+    }
+
+    window.onbeforeunload = function () {
+        ws.onclose = function () {
+        }; // disable onclose handler first
+        ws.close()
+    };
+
+</script>
+
+</html>

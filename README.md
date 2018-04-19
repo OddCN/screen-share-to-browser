@@ -2,6 +2,8 @@
 
 ![logo](/pictures/ic_launcher.png)
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/82397e0863a04f488a1442162fd79b2d)](https://www.codacy.com/app/OddCN/screen-share-to-browser?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=OddCN/screen-share-to-browser&amp;utm_campaign=Badge_Grade)
+
 Android screen share to pc browser over WiFi, with WebSocket.
 
 - web socket (Java-WebSocket)
