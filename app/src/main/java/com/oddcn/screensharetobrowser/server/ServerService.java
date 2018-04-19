@@ -8,6 +8,7 @@ import android.os.IBinder;
 import android.support.annotation.Nullable;
 import android.util.Log;
 
+import com.oddcn.screensharetobrowser.R;
 import com.oddcn.screensharetobrowser.RxBus;
 import com.oddcn.screensharetobrowser.main.view.MainActivity;
 import com.oddcn.screensharetobrowser.main.viewModel.MainViewModel;
@@ -56,7 +57,7 @@ public class ServerService extends Service {
         startForeground(
                 1,
                 Notifier.from(this)
-                        .setTitle("屏幕分享服务")
+                        .setTitle(getResources().getString(R.string.screen_share_service))
                         .setActivityClass(MainActivity.class)
                         .build()
         );

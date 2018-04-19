@@ -1,19 +1,29 @@
 <resources>
-    <string name="app_name">屏幕分享</string>
+    <string name="app_name">Screen Share</string>
 
-    <string name="wifi_mode_desc">本机与其他设备（电脑、手机等）处在同一WiFi网络下，使用其他设备的浏览器访问本机的服务地址</string>
-    <string name="hotspot_mode_desc">本机建立WiFi热点，其他设备（电脑、手机等）连接本机发射的无线网络后，打开浏览器访问本机的服务地址</string>
+    <string name="wifi_mode_desc">This phone and other devices (computers, mobile phones, etc.) are in same WiFi network and use other devices\' browsers to visit this phone \'s service address.</string>
+    <string name="hotspot_mode_desc">This phone establishes a WiFi hotspot. After other devices (computers, mobile phones, etc.) are connected to the portable hotspot of this phone, use other devices\' browsers to visit this phone \'s service address.</string>
 
-    <string name="local_ip">本机</string>
+    <string name="local_ip">This Phone</string>
 
-    <string name="start_server">开启服务</string>
-    <string name="stop_server">停止服务</string>
-    <string name="start_record">开始录屏</string>
-    <string name="stop_record">停止录屏</string>
+    <string name="start_server">Start service</string>
+    <string name="stop_server">Stop service</string>
+    <string name="start_record">Start record</string>
+    <string name="stop_record">Stop record</string>
 
-    <string name="permission_request_denied">需要相应的权限</string>
+    <string name="permission_request_denied">Need permission</string>
 
     <string name="warning">Warning</string>
     <string name="dialog_exit_message">Service is currently running. If you exit the application we will stop it. Are sure you want to exit the application?</string>
 
+    <string name="now">NOW</string>
+    <string name="wifi_mode">WIFI MODE</string>
+    <string name="hotspot_mode">HOTSPOT MODE</string>
+    <string name="service_started_on">Service started on</string>
+    <string name="started"> </string>
+    <string name="service_stopped">Service stopped</string>
+    <string name="current_conn">connected</string>
+    <string name="conn_devices">device(s)</string>
+
+    <string name="screen_share_service">Screen Share Service</string>
 </resources>

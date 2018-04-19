@@ -22,7 +22,7 @@
             android:paddingEnd="6dp"
             android:paddingStart="6dp"
             android:paddingTop="3dp"
-            android:text="当前"
+            android:text="@string/now"
             android:textColor="#FFF" />
 
         <LinearLayout

@@ -50,7 +50,7 @@
                     app:content_text="@string/wifi_mode_desc"
                     app:img_icon="@drawable/ic_wifi"
                     app:open="@{vm.mode == 0}"
-                    app:title_text="WIFI模式" />
+                    app:title_text="@string/wifi_mode" />
 
                 <com.oddcn.screensharetobrowser.main.view.CustomModeView
                     android:id="@+id/mode_view_hotspot"
@@ -65,7 +65,7 @@
                     app:content_text="@string/hotspot_mode_desc"
                     app:img_icon="@drawable/ic_hotspot"
                     app:open="@{vm.mode == 1}"
-                    app:title_text="热点模式" />
+                    app:title_text="@string/hotspot_mode" />
             </RelativeLayout>
 
             <LinearLayout
@@ -157,7 +157,7 @@
                 android:paddingBottom="8dp"
                 android:paddingStart="16dp"
                 android:paddingTop="8dp"
-                android:text="@{vm.isServerRunning ? `服务已在`+ vm.localIpText+`:`+vm.webServerPort+`启动`:`服务未启动`}" />
+                android:text="@{vm.isServerRunning ? @string/service_started_on +` `+ vm.localIpText+`:`+vm.webServerPort+` `+@string/started: @string/service_stopped}" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -171,7 +171,7 @@
                     android:paddingBottom="8dp"
                     android:paddingStart="16dp"
                     android:paddingTop="8dp"
-                    android:text="当前连接 "
+                    android:text="@string/current_conn"
                     android:visibility="@{vm.isServerRunning ? View.VISIBLE : View.INVISIBLE}" />
 
                 <TextView
@@ -179,7 +179,7 @@
                     android:layout_height="wrap_content"
                     android:background="#FFF"
                     android:padding="8dp"
-                    android:text="@{`` + vm.serverConnCount + `个`}"
+                    android:text="@{`` + vm.serverConnCount +` `+ @string/conn_devices}"
                     android:visibility="@{vm.isServerRunning ? View.VISIBLE : View.INVISIBLE}" />
 
                 <android.support.v7.widget.RecyclerView
