@@ -28,4 +28,16 @@ public class WebServer {
 
         return andServer.createServer();
     }
+
+    public static Server initChs(AssetManager assetManager, int port, Server.Listener listener) {
+        AndServer andServer = new AndServer.Build()
+                .port(port)
+                .timeout(10 * 1000)
+                .registerHandler("wsinfo",new RequestWsInfoHandler())
+                .website(new AssetsWebsite(assetManager, "chs"))
+                .listener(listener)
+                .build();
+
+        return andServer.createServer();
+    }
 }

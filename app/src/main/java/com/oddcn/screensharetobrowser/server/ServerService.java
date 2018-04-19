@@ -83,7 +83,7 @@ public class ServerService extends Service {
     }
 
     private void createWebServer() {
-        webServer = WebServer.init(mAssetManager, MainViewModel.webServerPort.get(), new Server.Listener() {
+        Server.Listener listener = new Server.Listener() {
             @Override
             public void onStarted() {
                 Log.d(TAG, "web server onStarted: ");
@@ -122,7 +122,14 @@ public class ServerService extends Service {
                     serverServiceListener.onWebServerError(WebServer.ERROR_TYPE_NORMAL);
                 }
             }
-        });
+        };
+
+        if (getResources().getConfiguration().locale.getCountry().equals("CN")) {
+            webServer = WebServer.initChs(mAssetManager, MainViewModel.webServerPort.get(), listener);
+        } else {
+            webServer = WebServer.init(mAssetManager, MainViewModel.webServerPort.get(), listener);
+        }
+
     }
 
     private void createWsServer() {
