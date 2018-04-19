@@ -9,7 +9,6 @@ import android.graphics.BitmapFactory;
 import android.support.v4.app.NotificationCompat;
 
 import com.oddcn.screensharetobrowser.R;
-import com.oddcn.screensharetobrowser.main.view.MainActivity;
 
 
 /**

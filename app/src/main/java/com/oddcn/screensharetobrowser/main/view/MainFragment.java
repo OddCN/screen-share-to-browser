@@ -2,8 +2,6 @@ package com.oddcn.screensharetobrowser.main.view;
 
 
 import android.Manifest;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
@@ -15,17 +13,12 @@ import android.media.projection.MediaProjectionManager;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.support.v4.app.Fragment;
-import android.support.v4.view.PagerAdapter;
 import android.support.v7.widget.LinearLayoutManager;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.DecelerateInterpolator;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.oddcn.screensharetobrowser.R;
@@ -36,12 +29,10 @@ import com.oddcn.screensharetobrowser.recorder.RecordServiceListener;
 import com.oddcn.screensharetobrowser.server.ServerService;
 import com.oddcn.screensharetobrowser.server.ServerServiceListener;
 import com.oddcn.screensharetobrowser.server.webServer.WebServer;
-import com.oddcn.screensharetobrowser.server.wsServer.WsServer;
 import com.oddcn.screensharetobrowser.utils.PermissionUtil;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static android.app.Activity.RESULT_OK;
 import static android.content.Context.BIND_AUTO_CREATE;

@@ -1,14 +1,9 @@
 package com.oddcn.screensharetobrowser.main.view;
 
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.view.MotionEvent;
-import android.view.View;
-import android.view.animation.DecelerateInterpolator;
 
 import com.oddcn.screensharetobrowser.R;
 import com.oddcn.screensharetobrowser.main.viewModel.MainViewModel;
