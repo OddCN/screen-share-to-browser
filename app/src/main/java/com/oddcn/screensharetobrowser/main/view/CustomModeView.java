@@ -31,13 +31,10 @@ public class CustomModeView extends FrameLayout implements View.OnTouchListener 
 
     private TextView tvNow;
 
-    private ImageView imgV;
     private int imgVIconId;
 
-    private TextView tvTitle;
     private String titleText;
 
-    private TextView tvContent;
     private String contentText;
 
     private View viewTransparent;
@@ -77,9 +74,9 @@ public class CustomModeView extends FrameLayout implements View.OnTouchListener 
 
         frameLayout = (FrameLayout) findViewById(R.id.frame);
         tvNow = (TextView) findViewById(R.id.tv_now);
-        imgV = (ImageView) findViewById(R.id.img_icon);
-        tvTitle = (TextView) findViewById(R.id.tv_title);
-        tvContent = (TextView) findViewById(R.id.tv_content);
+        ImageView imgV = (ImageView) findViewById(R.id.img_icon);
+        TextView tvTitle = (TextView) findViewById(R.id.tv_title);
+        TextView tvContent = (TextView) findViewById(R.id.tv_content);
         viewTransparent = findViewById(R.id.view_transparent);
 
         imgV.setImageResource(imgVIconId);

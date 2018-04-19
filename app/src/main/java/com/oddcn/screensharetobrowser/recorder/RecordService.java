@@ -42,10 +42,8 @@ import io.reactivex.schedulers.Schedulers;
 public class RecordService extends Service {
     private static final String TAG = "RecordService";
     private MediaProjection mediaProjection;
-    private MediaRecorder mediaRecorder;
     private ImageReader imageReader;
     private VirtualDisplay virtualDisplay;
-    private WindowManager mWindowManager;
     private boolean running;
     private int width;
     private int height;
@@ -68,6 +66,8 @@ public class RecordService extends Service {
     public void removeListener() {
         recordServiceListener = null;
     }
+
+    private CompositeDisposable compositeDisposable = new CompositeDisposable();
 
     private class ScreenHandler extends Handler {
         public ScreenHandler(Looper looper) {
@@ -93,11 +93,9 @@ public class RecordService extends Service {
     @Override
     public void onCreate() {
         super.onCreate();
-        HandlerThread serviceThread = new HandlerThread("service_thread",
-                android.os.Process.THREAD_PRIORITY_BACKGROUND);
+        HandlerThread serviceThread = new HandlerThread("service_thread", android.os.Process.THREAD_PRIORITY_BACKGROUND);
         serviceThread.start();
         running = false;
-        mediaRecorder = new MediaRecorder();
 
         threadCount = Runtime.getRuntime().availableProcessors();
         Log.d(TAG, "onCreate: threadCount" + threadCount);
@@ -108,7 +106,7 @@ public class RecordService extends Service {
         screenHandler = new ScreenHandler(handlerThread.getLooper());
 
         //get the size of the window
-        mWindowManager = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
+        WindowManager mWindowManager = (WindowManager) getApplication().getSystemService(Context.WINDOW_SERVICE);
 //        width = mWindowManager.getDefaultDisplay().getWidth() + 40;
         width = mWindowManager.getDefaultDisplay().getWidth();
         height = mWindowManager.getDefaultDisplay().getHeight();
@@ -219,25 +217,22 @@ public class RecordService extends Service {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                } finally {
                 }
             }
         }, screenHandler);
     }
 
-    private CompositeDisposable compositeDisposable = new CompositeDisposable();
-
-    private ObservableEmitter<ImageInfo> imageInfoObservableEmitter;
-
-    private Observable<ImageInfo> getByteBufferObservable() {
-        return Observable.create(new ObservableOnSubscribe<ImageInfo>() {
-            @Override
-            public void subscribe(ObservableEmitter<ImageInfo> e) throws Exception {
-                imageInfoObservableEmitter = e;
-                Log.d(TAG, "subscribe: " + Process.myTid());
-            }
-        });
-    }
+//    private ObservableEmitter<ImageInfo> imageInfoObservableEmitter;
+//
+//    private Observable<ImageInfo> getByteBufferObservable() {
+//        return Observable.create(new ObservableOnSubscribe<ImageInfo>() {
+//            @Override
+//            public void subscribe(ObservableEmitter<ImageInfo> e) throws Exception {
+//                imageInfoObservableEmitter = e;
+//                Log.d(TAG, "subscribe: " + Process.myTid());
+//            }
+//        });
+//    }
 
     private Function<FlagImageInfo, FlagBitmap> getBitmapFunction() {
         return new Function<FlagImageInfo, FlagBitmap>() {
@@ -268,8 +263,6 @@ public class RecordService extends Service {
                 if (flagBitmap.flag > postedImgFlag) {
                     postedImgFlag = flagBitmap.flag;
                     RxBus.getDefault().post(base64Str);
-                } else {
-                    Log.d(TAG, "deprecated " + flagBitmap.flag);
                 }
 
                 try {
@@ -291,11 +284,11 @@ public class RecordService extends Service {
     }
 
     private class ImageInfo {
-        int width;
-        int height;
-        ByteBuffer byteBuffer;
-        int pixelStride;
-        int rowPadding;
+        private int width;
+        private int height;
+        private ByteBuffer byteBuffer;
+        private int pixelStride;
+        private int rowPadding;
 
         public ImageInfo(int width, int height, ByteBuffer byteBuffer, int pixelStride, int rowPadding) {
             this.width = width;
@@ -307,8 +300,8 @@ public class RecordService extends Service {
     }
 
     private class FlagImageInfo {
-        ImageInfo imageInfo;
-        long flag;
+        private ImageInfo imageInfo;
+        private long flag;
 
         public FlagImageInfo(ImageInfo imageInfo, long flag) {
             this.imageInfo = imageInfo;
@@ -317,8 +310,8 @@ public class RecordService extends Service {
     }
 
     private class FlagBitmap {
-        Bitmap bitmap;
-        long flag;
+        private Bitmap bitmap;
+        private long flag;
 
         public FlagBitmap(Bitmap bitmap, long flag) {
             this.bitmap = bitmap;
