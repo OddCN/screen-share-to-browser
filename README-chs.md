@@ -16,21 +16,21 @@
 
 ## APP
 
-<img src="/pictures/app_1.png" height = "600" alt="app1"/>
+<img src="/pictures/chs/app_1.png" height = "600" alt="app1"/>
 
-<img src="/pictures/app_2.png" height = "600" alt="app2"/>
+<img src="/pictures/chs/app_2.png" height = "600" alt="app2"/>
 
 ## 分享中
 
-![pc1](/pictures/pc_1.png)
+![pc1](/pictures/chs/pc_1.png)
 
-<img src="/pictures/phone_1.png" height = "600" alt="phone1"/>
+<img src="/pictures/chs/phone_1.png" height = "600" alt="phone1"/>
 
-![pc2](/pictures/pc_2.png)
+![pc2](/pictures/chs/pc_2.png)
 
-<img src="/pictures/phone_2.png" height = "600" alt="phone2"/>
+<img src="/pictures/chs/phone_2.png" height = "600" alt="phone2"/>
 
-![pc_screen](/pictures/pc_screen.gif)
+![pc_screen](/pictures/chs/pc_screen.gif)
 
 # TODO
 
