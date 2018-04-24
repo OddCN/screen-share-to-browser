@@ -14,21 +14,25 @@
 
 # 截图
 
-## APP
+## App
 
-<img src="/pictures/chs/app_1.png" height = "600" alt="app1"/>
-
-<img src="/pictures/chs/app_2.png" height = "600" alt="app2"/>
+<div>
+    <img src="/pictures/chs/app_1.png" width="30%" alt="app1"/>
+    <img src="/pictures/chs/app_2.png" width="30%" alt="app2"/>
+</div>
 
 ## 分享中
 
-![pc1](/pictures/chs/pc_1.png)
 
-<img src="/pictures/chs/phone_1.png" height = "600" alt="phone1"/>
+<div>
+    <img src="/pictures/chs/pc_1.png" width="70%"/>
+    <img src="/pictures/chs/phone_1.png" width="20%"/>
+</div>
 
-![pc2](/pictures/chs/pc_2.png)
-
-<img src="/pictures/chs/phone_2.png" height = "600" alt="phone2"/>
+<div>
+    <img src="/pictures/chs/pc_2.png" width="70%"/>
+    <img src="/pictures/chs/phone_2.png" width="20%"/>
+</div>
 
 ![pc_screen](/pictures/chs/pc_screen.gif)
 
