@@ -16,6 +16,8 @@
 
 [视频](https://gfycat.com/ClearcutThoughtfulBluebreastedkookaburra)
 
+[English](/README.md) | 简体中文
+
 # 截图
 
 ## App
