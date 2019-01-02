@@ -1,6 +1,6 @@
 # screen-share-to-browser
 
-![logo](/pictures/ic_launcher.png)
+![logo](/img/ic_launcher.png)
 
 [![Codacy Badge](https://api.codacy.com/project/badge/Grade/82397e0863a04f488a1442162fd79b2d)](https://www.codacy.com/app/OddCN/screen-share-to-browser?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=OddCN/screen-share-to-browser&amp;utm_campaign=Badge_Grade)
 
@@ -14,28 +14,32 @@ Android screen share to pc browser over WiFi, with WebSocket.
 
 [简体中文](/README-chs.md)
 
+![demo](ezgif.com-video-to-gif.gif)
+
+[Video](https://gfycat.com/ClearcutThoughtfulBluebreastedkookaburra)
+
 # Screenshot
 
 ## App
 
 <div>
-    <img src="/pictures/app_1.png" width="30%" alt="app1"/>
-    <img src="/pictures/app_2.png" width="30%" alt="app2"/>
+    <img src="/img/app_1.png" width="30%" alt="app1"/>
+    <img src="/img/app_2.png" width="30%" alt="app2"/>
 </div>
 
 ## Sharing
 
 <div>
-    <img src="/pictures/pc_1.png" width="70%"/>
-    <img src="/pictures/phone_1.png" width="20%"/>
+    <img src="/img/pc_1.png" width="70%"/>
+    <img src="/img/phone_1.png" width="20%"/>
 </div>
 
 <div>
-    <img src="/pictures/pc_2.png" width="70%"/>
-    <img src="/pictures/phone_2.png" width="20%"/>
+    <img src="/img/pc_2.png" width="70%"/>
+    <img src="/img/phone_2.png" width="20%"/>
 </div>
 
-![pc_screen](/pictures/pc_screen.gif)
+![pc_screen](/img/pc_screen.gif)
 
 # TODO
 
