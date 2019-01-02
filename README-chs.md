@@ -12,7 +12,7 @@
 - RxJava2
 - RxBus
 
-![demo](ezgif.com-video-to-gif.gif)
+![demo](/img/ezgif.com-video-to-gif.gif)
 
 [视频](https://gfycat.com/ClearcutThoughtfulBluebreastedkookaburra)
 

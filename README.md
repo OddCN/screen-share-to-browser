@@ -14,7 +14,7 @@ Android screen share to pc browser over WiFi, with WebSocket.
 
 [简体中文](/README-chs.md)
 
-![demo](ezgif.com-video-to-gif.gif)
+![demo](/img/ezgif.com-video-to-gif.gif)
 
 [Video](https://gfycat.com/ClearcutThoughtfulBluebreastedkookaburra)
 
